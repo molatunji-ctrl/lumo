@@ -13,6 +13,7 @@ class NearbyShopsScreen extends StatefulWidget {
 
 class _NearbyShopsScreenState extends State<NearbyShopsScreen> {
   String _activeTab = 'Browse this area';
+  bool _isMapView = false;
 
   @override
   Widget build(BuildContext context) {
@@ -30,88 +31,139 @@ class _NearbyShopsScreenState extends State<NearbyShopsScreen> {
           },
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: isDesktop ? 48 : 20,
-            vertical: 20,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Headline & Subtitle
-              Text(
-                'Good finds, just around the corner.',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: isDesktop ? 32 : 24,
-                  fontWeight: FontWeight.bold,
-                ),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: isDesktop ? 48 : 20,
+                vertical: 20,
               ),
-              const SizedBox(height: 6),
-              const Text(
-                'Exploring Ikeja, Lagos · Area selected manually. Distances are unavailable.',
-                style: TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 13,
-                ),
-              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Headline & Subtitle
+                  Text(
+                    'Good finds, just around the corner.',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: isDesktop ? 32 : 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Exploring Ikeja, Lagos · Area selected manually. Distances are unavailable.',
+                    style: TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 13,
+                    ),
+                  ),
 
-              const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-              // Filter Tabs
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    _buildFilterTab('Browse this area', isSelected: _activeTab == 'Browse this area'),
-                    const SizedBox(width: 8),
-                    _buildFilterTab('All places', isSelected: _activeTab == 'All places'),
-                    const SizedBox(width: 8),
-                    _buildFilterTab('Shops', isSelected: _activeTab == 'Shops'),
-                    const SizedBox(width: 8),
-                    _buildFilterTab('Markets', isSelected: _activeTab == 'Markets'),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // Content Split (Desktop/Tablet 2 columns, Phone stacked)
-              isDesktop
-                  ? Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  // Filter Tabs
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
                       children: [
-                        Expanded(flex: 5, child: _buildShopListSection(context)),
-                        const SizedBox(width: 24),
-                        Expanded(flex: 7, child: _buildMapPreviewSection()),
-                      ],
-                    )
-                  : Column(
-                      children: [
-                        _buildShopListSection(context),
-                        const SizedBox(height: 24),
-                        _buildMapPreviewSection(),
+                        _buildFilterTab('Browse this area', isSelected: _activeTab == 'Browse this area'),
+                        const SizedBox(width: 8),
+                        _buildFilterTab('All places', isSelected: _activeTab == 'All places'),
+                        const SizedBox(width: 8),
+                        _buildFilterTab('Shops', isSelected: _activeTab == 'Shops'),
+                        const SizedBox(width: 8),
+                        _buildFilterTab('Markets', isSelected: _activeTab == 'Markets'),
                       ],
                     ),
-
-              const SizedBox(height: 20),
-
-              // Disclaimer
-              const Center(
-                child: Text(
-                  'Lumo design preview · Fictional listings and illustrative imagery. Confirm details with each shop before visiting.',
-                  style: TextStyle(
-                    color: AppColors.textMuted,
-                    fontSize: 11,
                   ),
-                  textAlign: TextAlign.center,
+
+                  const SizedBox(height: 24),
+
+                  // Content Split (Desktop/Tablet 2 columns, Phone stacked)
+                  isDesktop
+                      ? Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(flex: 5, child: _buildShopListSection(context)),
+                            const SizedBox(width: 24),
+                            Expanded(flex: 7, child: _buildMapPreviewSection()),
+                          ],
+                        )
+                      : (_isMapView
+                          ? _buildMapPreviewSection(height: 500)
+                          : _buildShopListSection(context)),
+
+                  const SizedBox(height: 20),
+
+                  // Disclaimer
+                  const Center(
+                    child: Text(
+                      'Lumo design preview · Fictional listings and illustrative imagery. Confirm details with each shop before visiting.',
+                      style: TextStyle(
+                        color: AppColors.textMuted,
+                        fontSize: 11,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const SizedBox(height: 60),
+                ],
+              ),
+            ),
+          ),
+
+          // Floating Map / List Toggle Button for Mobile
+          if (!isDesktop)
+            Positioned(
+              bottom: 24,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _isMapView = !_isMapView;
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: AppColors.navy,
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(color: AppColors.cardBorder, width: 1.5),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.4),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          _isMapView ? Icons.format_list_bulleted_rounded : Icons.map_rounded,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          _isMapView ? 'List' : 'Map',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(height: 30),
-            ],
-          ),
-        ),
+            ),
+        ],
       ),
       bottomNavigationBar: AppBottomNavigation(
         currentIndex: 2,
@@ -259,9 +311,9 @@ class _NearbyShopsScreenState extends State<NearbyShopsScreen> {
     );
   }
 
-  Widget _buildMapPreviewSection() {
+  Widget _buildMapPreviewSection({double height = 420}) {
     return Container(
-      height: 420,
+      height: height,
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),

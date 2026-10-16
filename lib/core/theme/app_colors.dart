@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // Brand Colors
+  static const Color navy = Color(0xFF152D4D);
   static const Color orange = Color(0xFFFF8A3D);
   static const Color orangeDark = Color(0xFFE06D28);
   static const Color orangeLight = Color(0xFFFF9B54);
   static const Color green = Color(0xFF00C98D);
+  static const Color trackColor = Color(0xFF354D69);
 
   // Light Theme Colors
   static const Color lightBackground = Color(0xFFF8FAFC);
@@ -22,6 +24,13 @@ class AppColors {
   static const Color darkTextPrimary = Colors.white;
   static const Color darkTextSecondary = Color(0xFF94A3B8);
   static const Color darkTextMuted = Color(0xFF64748B);
+
+  // Universal Aliases
+  static const Color surface = lightSurface;
+  static const Color cardBorder = lightCardBorder;
+  static const Color textPrimary = lightTextPrimary;
+  static const Color textSecondary = lightTextSecondary;
+  static const Color textMuted = lightTextMuted;
 
   // Status Colors
   static const Color error = Color(0xFFEF4444);

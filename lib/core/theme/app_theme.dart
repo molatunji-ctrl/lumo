@@ -2,6 +2,35 @@ import 'package:flutter/material.dart';
 import 'app_colors.dart';
 
 class AppTheme {
+  static ThemeData get lightTheme {
+    return ThemeData(
+      brightness: Brightness.light,
+      scaffoldBackgroundColor: AppColors.lightBackground,
+      primaryColor: AppColors.orange,
+      colorScheme: const ColorScheme.light(
+        primary: AppColors.orange,
+        secondary: AppColors.orangeLight,
+        surface: AppColors.lightSurface,
+        error: AppColors.error,
+      ),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: AppColors.lightBackground,
+        foregroundColor: AppColors.lightTextPrimary,
+        elevation: 0,
+        centerTitle: false,
+      ),
+      cardTheme: CardThemeData(
+        color: AppColors.lightSurface,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: AppColors.lightCardBorder, width: 1),
+        ),
+      ),
+      useMaterial3: true,
+    );
+  }
+
   static ThemeData get darkTheme {
     return ThemeData(
       brightness: Brightness.dark,
@@ -10,26 +39,24 @@ class AppTheme {
       colorScheme: const ColorScheme.dark(
         primary: AppColors.orange,
         secondary: AppColors.orangeLight,
-        surface: AppColors.surface,
+        surface: AppColors.darkSurface,
         error: AppColors.error,
       ),
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.darkBackground,
-        foregroundColor: AppColors.textPrimary,
+        foregroundColor: AppColors.darkTextPrimary,
         elevation: 0,
         centerTitle: false,
       ),
       cardTheme: CardThemeData(
-        color: AppColors.surface,
+        color: AppColors.darkSurface,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: AppColors.cardBorder, width: 1),
+          side: const BorderSide(color: AppColors.darkCardBorder, width: 1),
         ),
       ),
       useMaterial3: true,
     );
   }
-
-  static ThemeData get lightTheme => darkTheme;
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../app.dart';
+import '../../../core/routing/app_router.dart';
 
 class HomeHeader extends StatelessWidget {
   final String locationName;
@@ -17,9 +19,16 @@ class HomeHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
     final bool isDesktop = width > 800;
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    final Color bgColor = isDarkMode ? AppColors.darkBackground : AppColors.lightBackground;
+    final Color textColor = isDarkMode ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final Color surfaceColor = isDarkMode ? AppColors.darkSurface : AppColors.lightSurface;
+    final Color borderColor = isDarkMode ? AppColors.darkCardBorder : AppColors.lightCardBorder;
+    final Color secondaryColor = isDarkMode ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
 
     return Container(
-      color: AppColors.darkBackground,
+      color: bgColor,
       padding: EdgeInsets.symmetric(
         horizontal: isDesktop ? 48 : 20,
         vertical: 16,
@@ -28,10 +37,10 @@ class HomeHeader extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           // Logo
-          const Text(
+          Text(
             'lumo',
             style: TextStyle(
-              color: Colors.white,
+              color: textColor,
               fontSize: 28,
               fontWeight: FontWeight.w900,
               letterSpacing: -1.5,
@@ -42,13 +51,19 @@ class HomeHeader extends StatelessWidget {
           if (isDesktop)
             Row(
               children: [
-                _buildNavLink('Discover', isActive: true, onTap: () {}),
+                _buildNavLink('Discover', isActive: true, textColor: textColor, secondaryColor: secondaryColor, onTap: () {}),
                 const SizedBox(width: 24),
-                _buildNavLink('Products', onTap: () {}),
+                _buildNavLink('Products', textColor: textColor, secondaryColor: secondaryColor, onTap: () {
+                  Navigator.pushNamed(context, AppRouter.products);
+                }),
                 const SizedBox(width: 24),
-                _buildNavLink('Markets', onTap: () {}),
+                _buildNavLink('Markets', textColor: textColor, secondaryColor: secondaryColor, onTap: () {
+                  Navigator.pushNamed(context, AppRouter.markets);
+                }),
                 const SizedBox(width: 24),
-                _buildNavLink('Nearby shops', onTap: () {}),
+                _buildNavLink('Nearby shops', textColor: textColor, secondaryColor: secondaryColor, onTap: () {
+                  Navigator.pushNamed(context, AppRouter.nearby);
+                }),
               ],
             ),
 
@@ -64,31 +79,31 @@ class HomeHeader extends StatelessWidget {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
+                    color: surfaceColor,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppColors.cardBorder),
+                    border: Border.all(color: borderColor),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.location_on_outlined,
-                        color: AppColors.textSecondary,
+                        color: secondaryColor,
                         size: 16,
                       ),
                       const SizedBox(width: 6),
                       Text(
                         locationName,
-                        style: const TextStyle(
-                          color: AppColors.textPrimary,
+                        style: TextStyle(
+                          color: textColor,
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       const SizedBox(width: 4),
-                      const Icon(
+                      Icon(
                         Icons.keyboard_arrow_down,
-                        color: AppColors.textSecondary,
+                        color: secondaryColor,
                         size: 16,
                       ),
                     ],
@@ -96,54 +111,66 @@ class HomeHeader extends StatelessWidget {
                 ),
               ),
 
-              if (isDesktop) ...[
-                const SizedBox(width: 12),
-                // Theme Toggle Icon
-                _buildIconButton(
-                  icon: Icons.light_mode_outlined,
-                  onTap: () {},
-                ),
-              ],
+              const SizedBox(width: 8),
+
+              // Theme Toggle Icon Button
+              _buildIconButton(
+                icon: isDarkMode ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                surfaceColor: surfaceColor,
+                borderColor: borderColor,
+                iconColor: textColor,
+                onTap: () {
+                  ThemeController.instance.toggleTheme();
+                },
+              ),
 
               const SizedBox(width: 8),
 
               // Notification Icon
               _buildIconButton(
                 icon: Icons.notifications_none_rounded,
+                surfaceColor: surfaceColor,
+                borderColor: borderColor,
+                iconColor: textColor,
                 onTap: onNotificationTap ?? () {},
               ),
 
               if (isDesktop) ...[
                 const SizedBox(width: 12),
                 // Sign In Button
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppColors.cardBorder),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.person_outline_rounded,
-                        color: AppColors.textPrimary,
-                        size: 16,
-                      ),
-                      SizedBox(width: 6),
-                      Text(
-                        'Sign in',
-                        style: TextStyle(
-                          color: AppColors.textPrimary,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRouter.account);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: surfaceColor,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: borderColor),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.person_outline_rounded,
+                          color: textColor,
+                          size: 16,
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 6),
+                        Text(
+                          'Sign in',
+                          style: TextStyle(
+                            color: textColor,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -154,14 +181,19 @@ class HomeHeader extends StatelessWidget {
     );
   }
 
-  Widget _buildNavLink(String title,
-      {bool isActive = false, required VoidCallback onTap}) {
+  Widget _buildNavLink(
+    String title, {
+    bool isActive = false,
+    required Color textColor,
+    required Color secondaryColor,
+    required VoidCallback onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Text(
         title,
         style: TextStyle(
-          color: isActive ? Colors.white : AppColors.textSecondary,
+          color: isActive ? textColor : secondaryColor,
           fontSize: 14,
           fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
         ),
@@ -169,23 +201,30 @@ class HomeHeader extends StatelessWidget {
     );
   }
 
-  Widget _buildIconButton({required IconData icon, required VoidCallback onTap}) {
+  Widget _buildIconButton({
+    required IconData icon,
+    required Color surfaceColor,
+    required Color borderColor,
+    required Color iconColor,
+    required VoidCallback onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: 38,
         height: 38,
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: surfaceColor,
           shape: BoxShape.circle,
-          border: Border.all(color: AppColors.cardBorder),
+          border: Border.all(color: borderColor),
         ),
         child: Icon(
           icon,
-          color: AppColors.textPrimary,
+          color: iconColor,
           size: 18,
         ),
       ),
     );
   }
 }
+// Header widget
