@@ -13,20 +13,26 @@ class AppBottomNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    final Color navBgColor = isDarkMode ? AppColors.darkBackground : Colors.white;
+    final Color borderColor = isDarkMode ? AppColors.darkCardBorder : AppColors.lightCardBorder;
+    final Color unselectedColor = isDarkMode ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.darkBackground,
+      decoration: BoxDecoration(
+        color: navBgColor,
         border: Border(
-          top: BorderSide(color: AppColors.cardBorder, width: 1),
+          top: BorderSide(color: borderColor, width: 1),
         ),
       ),
       child: BottomNavigationBar(
         currentIndex: currentIndex,
         onTap: onTap,
         type: BottomNavigationBarType.fixed,
-        backgroundColor: AppColors.darkBackground,
+        backgroundColor: navBgColor,
         selectedItemColor: AppColors.orange,
-        unselectedItemColor: AppColors.textSecondary,
+        unselectedItemColor: unselectedColor,
         selectedFontSize: 11,
         unselectedFontSize: 11,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),

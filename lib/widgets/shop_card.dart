@@ -14,21 +14,30 @@ class ShopCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    final Color surfaceColor = isDarkMode ? AppColors.darkSurface : AppColors.lightSurface;
+    final Color borderColor = isDarkMode ? AppColors.darkCardBorder : AppColors.lightCardBorder;
+    final Color textColor = isDarkMode ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final Color secondaryColor = isDarkMode ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: surfaceColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.cardBorder),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.03),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          border: Border.all(color: borderColor),
+          boxShadow: isDarkMode
+              ? []
+              : [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,9 +54,9 @@ class ShopCard extends StatelessWidget {
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
                         height: 140,
-                        color: AppColors.navy,
+                        color: surfaceColor,
                         child: const Center(
-                          child: Icon(Icons.store, color: Colors.white, size: 48),
+                          child: Icon(Icons.store, color: AppColors.orange, size: 48),
                         ),
                       );
                     },
@@ -85,10 +94,10 @@ class ShopCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           shop.name,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
+                            color: textColor,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -100,9 +109,10 @@ class ShopCard extends StatelessWidget {
                           const SizedBox(width: 4),
                           Text(
                             shop.rating.toString(),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 12,
+                              color: textColor,
                             ),
                           ),
                         ],
@@ -112,8 +122,8 @@ class ShopCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     shop.description,
-                    style: const TextStyle(
-                      color: AppColors.textSecondary,
+                    style: TextStyle(
+                      color: secondaryColor,
                       fontSize: 12,
                     ),
                     maxLines: 2,
@@ -129,7 +139,7 @@ class ShopCard extends StatelessWidget {
                         '${shop.marketName} • ${shop.distance}',
                         style: const TextStyle(
                           fontSize: 11,
-                          color: AppColors.textMuted,
+                          color: AppColors.lightTextMuted,
                         ),
                       ),
                     ],

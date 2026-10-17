@@ -17,14 +17,24 @@ class ProductDetailsScreen extends StatelessWidget {
 
     final double width = MediaQuery.of(context).size.width;
     final bool isDesktop = width > 800;
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    final Color bgColor = isDarkMode ? AppColors.darkBackground : AppColors.lightBackground;
+    final Color surfaceColor = isDarkMode ? AppColors.darkSurface : AppColors.lightSurface;
+    final Color borderColor = isDarkMode ? AppColors.darkCardBorder : AppColors.lightCardBorder;
+    final Color textColor = isDarkMode ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final Color secondaryColor = isDarkMode ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
 
     return Scaffold(
-      backgroundColor: AppColors.darkBackground,
+      backgroundColor: bgColor,
       appBar: AppBar(
         title: Text(product.name),
+        backgroundColor: bgColor,
+        foregroundColor: textColor,
+        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.favorite_border),
+            icon: Icon(Icons.favorite_border, color: textColor),
             onPressed: () {},
           ),
         ],
@@ -41,8 +51,8 @@ class ProductDetailsScreen extends StatelessWidget {
               // Breadcrumbs
               Text(
                 'Discover / ${product.category} / ${product.name}',
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
+                style: TextStyle(
+                  color: secondaryColor,
                   fontSize: 12,
                 ),
               ),
@@ -54,27 +64,27 @@ class ProductDetailsScreen extends StatelessWidget {
                   ? Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(flex: 5, child: _buildProductImage(product, isDesktop)),
+                        Expanded(flex: 5, child: _buildProductImage(product, isDesktop, surfaceColor, borderColor)),
                         const SizedBox(width: 32),
-                        Expanded(flex: 5, child: _buildProductDetails(product)),
+                        Expanded(flex: 5, child: _buildProductDetails(product, textColor, secondaryColor, surfaceColor, borderColor)),
                       ],
                     )
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildProductImage(product, isDesktop),
+                        _buildProductImage(product, isDesktop, surfaceColor, borderColor),
                         const SizedBox(height: 20),
-                        _buildProductDetails(product),
+                        _buildProductDetails(product, textColor, secondaryColor, surfaceColor, borderColor),
                       ],
                     ),
 
               const SizedBox(height: 32),
 
               // Section 2: Find it at a local shop
-              const Text(
+              Text(
                 'Find it at a local shop',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: textColor,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -82,15 +92,15 @@ class ProductDetailsScreen extends StatelessWidget {
 
               const SizedBox(height: 12),
 
-              _buildLocalShopCard(context),
+              _buildLocalShopCard(context, surfaceColor, borderColor, textColor, secondaryColor),
 
               const SizedBox(height: 32),
 
               // Section 3: Keep exploring
-              const Text(
+              Text(
                 'Keep exploring',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: textColor,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -111,7 +121,7 @@ class ProductDetailsScreen extends StatelessWidget {
                 itemCount: 4,
                 itemBuilder: (context, index) {
                   final p = Product.mockProducts[index % Product.mockProducts.length];
-                  return _buildKeepExploringCard(context, p);
+                  return _buildKeepExploringCard(context, p, surfaceColor, borderColor, textColor, secondaryColor);
                 },
               ),
 
@@ -123,14 +133,14 @@ class ProductDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProductImage(Product product, bool isDesktop) {
+  Widget _buildProductImage(Product product, bool isDesktop, Color surfaceColor, Color borderColor) {
     return Container(
       height: isDesktop ? 340 : 250,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: surfaceColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: borderColor),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
@@ -138,20 +148,26 @@ class ProductDetailsScreen extends StatelessWidget {
           product.imageUrl,
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) =>
-              Container(color: AppColors.darkBackground),
+              Container(color: surfaceColor),
         ),
       ),
     );
   }
 
-  Widget _buildProductDetails(Product product) {
+  Widget _buildProductDetails(
+    Product product,
+    Color textColor,
+    Color secondaryColor,
+    Color surfaceColor,
+    Color borderColor,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          product.category.toUpperCase(),
-          style: const TextStyle(
-            color: AppColors.textMuted,
+        const Text(
+          'BAGS & ACCESSORIES',
+          style: TextStyle(
+            color: AppColors.lightTextMuted,
             fontSize: 11,
             fontWeight: FontWeight.bold,
             letterSpacing: 1,
@@ -160,8 +176,8 @@ class ProductDetailsScreen extends StatelessWidget {
         const SizedBox(height: 6),
         Text(
           product.name,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: textColor,
             fontSize: 28,
             fontWeight: FontWeight.bold,
           ),
@@ -169,8 +185,8 @@ class ProductDetailsScreen extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           product.displayPrice,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: textColor,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
@@ -178,15 +194,15 @@ class ProductDetailsScreen extends StatelessWidget {
         const Text(
           'Availability not confirmed',
           style: TextStyle(
-            color: AppColors.textMuted,
+            color: AppColors.lightTextMuted,
             fontSize: 11,
           ),
         ),
         const SizedBox(height: 16),
         Text(
           product.description,
-          style: const TextStyle(
-            color: AppColors.textSecondary,
+          style: TextStyle(
+            color: secondaryColor,
             fontSize: 13,
             height: 1.5,
           ),
@@ -214,26 +230,26 @@ class ProductDetailsScreen extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: surfaceColor,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.cardBorder),
+            border: Border.all(color: borderColor),
           ),
-          child: const Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'Before you visit',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: textColor,
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 4),
-              Text(
+              const SizedBox(height: 4),
+              const Text(
                 'Brand, material, dimensions and colour options have not been supplied. Ask the shop to confirm specifications and current pricing.',
                 style: TextStyle(
-                  color: AppColors.textMuted,
+                  color: AppColors.lightTextMuted,
                   fontSize: 11,
                   height: 1.4,
                 ),
@@ -245,7 +261,13 @@ class ProductDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLocalShopCard(BuildContext context) {
+  Widget _buildLocalShopCard(
+    BuildContext context,
+    Color surfaceColor,
+    Color borderColor,
+    Color textColor,
+    Color secondaryColor,
+  ) {
     final shop = Shop.mockShops.first;
     return GestureDetector(
       onTap: () {
@@ -258,9 +280,9 @@ class ProductDetailsScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: surfaceColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.cardBorder),
+          border: Border.all(color: borderColor),
         ),
         child: Row(
           children: [
@@ -272,7 +294,7 @@ class ProductDetailsScreen extends StatelessWidget {
                 height: 60,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) =>
-                    Container(width: 60, height: 60, color: AppColors.darkBackground),
+                    Container(width: 60, height: 60, color: surfaceColor),
               ),
             ),
             const SizedBox(width: 12),
@@ -282,8 +304,8 @@ class ProductDetailsScreen extends StatelessWidget {
                 children: [
                   Text(
                     shop.name,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: textColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
                     ),
@@ -291,8 +313,8 @@ class ProductDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     '${shop.category} · Ikeja',
-                    style: const TextStyle(
-                      color: AppColors.textSecondary,
+                    style: TextStyle(
+                      color: secondaryColor,
                       fontSize: 12,
                     ),
                   ),
@@ -300,15 +322,15 @@ class ProductDetailsScreen extends StatelessWidget {
                   const Text(
                     'Sample shop · Identity unverified',
                     style: TextStyle(
-                      color: AppColors.textMuted,
+                      color: AppColors.lightTextMuted,
                       fontSize: 10,
                     ),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
+                  Text(
                     'Discover this shop',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: textColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 11,
                     ),
@@ -322,7 +344,14 @@ class ProductDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildKeepExploringCard(BuildContext context, Product p) {
+  Widget _buildKeepExploringCard(
+    BuildContext context,
+    Product p,
+    Color surfaceColor,
+    Color borderColor,
+    Color textColor,
+    Color secondaryColor,
+  ) {
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(
@@ -333,9 +362,9 @@ class ProductDetailsScreen extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: surfaceColor,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.cardBorder),
+          border: Border.all(color: borderColor),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -349,7 +378,7 @@ class ProductDetailsScreen extends StatelessWidget {
                   width: double.infinity,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) =>
-                      Container(color: AppColors.darkBackground),
+                      Container(color: surfaceColor),
                 ),
               ),
             ),
@@ -358,10 +387,10 @@ class ProductDetailsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    p.category.toUpperCase(),
-                    style: const TextStyle(
-                      color: AppColors.textMuted,
+                  const Text(
+                    'CATEGORY',
+                    style: TextStyle(
+                      color: AppColors.lightTextMuted,
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
                     ),
@@ -369,8 +398,8 @@ class ProductDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     p.name,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: textColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
                     ),
@@ -380,8 +409,8 @@ class ProductDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     p.displayPrice,
-                    style: const TextStyle(
-                      color: AppColors.textSecondary,
+                    style: TextStyle(
+                      color: secondaryColor,
                       fontSize: 11,
                     ),
                   ),

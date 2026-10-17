@@ -28,9 +28,16 @@ class _ProductsScreenState extends State<ProductsScreen> {
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
     final bool isDesktop = width > 800;
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    final Color bgColor = isDarkMode ? AppColors.darkBackground : AppColors.lightBackground;
+    final Color surfaceColor = isDarkMode ? AppColors.darkSurface : AppColors.lightSurface;
+    final Color borderColor = isDarkMode ? AppColors.darkCardBorder : AppColors.lightCardBorder;
+    final Color textColor = isDarkMode ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final Color secondaryColor = isDarkMode ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
 
     return Scaffold(
-      backgroundColor: AppColors.darkBackground,
+      backgroundColor: bgColor,
       appBar: AppBar(
         title: const Text('Products'),
       ),
@@ -52,17 +59,17 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: AppColors.surface,
+                        color: surfaceColor,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: AppColors.cardBorder),
+                        border: Border.all(color: borderColor),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
                             filter,
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: textColor,
                               fontSize: 12,
                             ),
                           ),
@@ -73,9 +80,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                 _activeFilters.remove(filter);
                               });
                             },
-                            child: const Icon(
+                            child: Icon(
                               Icons.close,
-                              color: AppColors.textSecondary,
+                              color: secondaryColor,
                               size: 14,
                             ),
                           ),
@@ -90,10 +97,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
                           _activeFilters.clear();
                         });
                       },
-                      child: const Text(
+                      child: Text(
                         'Clear all',
                         style: TextStyle(
-                          color: AppColors.textSecondary,
+                          color: secondaryColor,
                           fontSize: 12,
                           decoration: TextDecoration.underline,
                         ),
@@ -109,26 +116,43 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   ? Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(width: 260, child: _buildFilterSidebar()),
+                        SizedBox(
+                            width: 260,
+                            child: _buildFilterSidebar(
+                                surfaceColor, borderColor, textColor, secondaryColor)),
                         const SizedBox(width: 28),
-                        Expanded(child: _buildProductsGrid(isDesktop: true)),
+                        Expanded(
+                            child: _buildProductsGrid(
+                                isDesktop: true,
+                                surfaceColor: surfaceColor,
+                                borderColor: borderColor,
+                                textColor: textColor,
+                                secondaryColor: secondaryColor)),
                       ],
                     )
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ExpansionTile(
-                          title: const Text(
+                          title: Text(
                             'Filters',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: textColor,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          children: [_buildFilterSidebar()],
+                          children: [
+                            _buildFilterSidebar(
+                                surfaceColor, borderColor, textColor, secondaryColor)
+                          ],
                         ),
                         const SizedBox(height: 16),
-                        _buildProductsGrid(isDesktop: false),
+                        _buildProductsGrid(
+                            isDesktop: false,
+                            surfaceColor: surfaceColor,
+                            borderColor: borderColor,
+                            textColor: textColor,
+                            secondaryColor: secondaryColor),
                       ],
                     ),
 
@@ -138,8 +162,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
               Center(
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: const BorderSide(color: AppColors.cardBorder),
+                    foregroundColor: textColor,
+                    side: BorderSide(color: borderColor),
                     padding: const EdgeInsets.symmetric(
                         horizontal: 32, vertical: 14),
                     shape: RoundedRectangleBorder(
@@ -162,13 +186,18 @@ class _ProductsScreenState extends State<ProductsScreen> {
     );
   }
 
-  Widget _buildFilterSidebar() {
+  Widget _buildFilterSidebar(
+    Color surfaceColor,
+    Color borderColor,
+    Color textColor,
+    Color secondaryColor,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: surfaceColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -176,10 +205,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Filters',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: textColor,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -193,68 +222,68 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     _accessoriesChecked = false;
                   });
                 },
-                child: const Text(
+                child: Text(
                   'Clear all',
                   style: TextStyle(
-                    color: AppColors.textSecondary,
+                    color: secondaryColor,
                     fontSize: 11,
                   ),
                 ),
               ),
             ],
           ),
-          const Divider(color: AppColors.cardBorder, height: 24),
+          Divider(color: borderColor, height: 24),
 
           // Category
-          const Text(
+          Text(
             'Category',
             style: TextStyle(
-              color: Colors.white,
+              color: textColor,
               fontSize: 13,
               fontWeight: FontWeight.bold,
             ),
           ),
-          _buildFilterCheckbox('Audio & headphones', '14', _audioChecked,
+          _buildFilterCheckbox('Audio & headphones', '14', _audioChecked, secondaryColor,
               (v) => setState(() => _audioChecked = v!)),
-          _buildFilterCheckbox('Phones', '11', _phonesChecked,
+          _buildFilterCheckbox('Phones', '11', _phonesChecked, secondaryColor,
               (v) => setState(() => _phonesChecked = v!)),
-          _buildFilterCheckbox('Computing', '8', _computingChecked,
+          _buildFilterCheckbox('Computing', '8', _computingChecked, secondaryColor,
               (v) => setState(() => _computingChecked = v!)),
-          _buildFilterCheckbox('Accessories', '5', _accessoriesChecked,
+          _buildFilterCheckbox('Accessories', '5', _accessoriesChecked, secondaryColor,
               (v) => setState(() => _accessoriesChecked = v!)),
 
           const SizedBox(height: 16),
 
           // Distance
-          const Text(
+          Text(
             'Distance',
             style: TextStyle(
-              color: Colors.white,
+              color: textColor,
               fontSize: 13,
               fontWeight: FontWeight.bold,
             ),
           ),
-          _buildFilterCheckbox('Under 2 km', '14', _under2km,
+          _buildFilterCheckbox('Under 2 km', '14', _under2km, secondaryColor,
               (v) => setState(() => _under2km = v!)),
-          _buildFilterCheckbox('Under 5 km', '11', _under5km,
+          _buildFilterCheckbox('Under 5 km', '11', _under5km, secondaryColor,
               (v) => setState(() => _under5km = v!)),
-          _buildFilterCheckbox('Under 10 km', '8', _under10km,
+          _buildFilterCheckbox('Under 10 km', '8', _under10km, secondaryColor,
               (v) => setState(() => _under10km = v!)),
 
           const SizedBox(height: 16),
 
           // Listing info
-          const Text(
+          Text(
             'Listing information',
             style: TextStyle(
-              color: Colors.white,
+              color: textColor,
               fontSize: 13,
               fontWeight: FontWeight.bold,
             ),
           ),
-          _buildFilterCheckbox('Price provided', '14', _priceProvided,
+          _buildFilterCheckbox('Price provided', '14', _priceProvided, secondaryColor,
               (v) => setState(() => _priceProvided = v!)),
-          _buildFilterCheckbox('Recently updated', '11', _recentlyUpdated,
+          _buildFilterCheckbox('Recently updated', '11', _recentlyUpdated, secondaryColor,
               (v) => setState(() => _recentlyUpdated = v!)),
 
           const SizedBox(height: 20),
@@ -290,6 +319,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
     String label,
     String count,
     bool value,
+    Color secondaryColor,
     ValueChanged<bool?> onChanged,
   ) {
     return Padding(
@@ -312,8 +342,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
           Expanded(
             child: Text(
               label,
-              style: const TextStyle(
-                color: AppColors.textSecondary,
+              style: TextStyle(
+                color: secondaryColor,
                 fontSize: 12,
               ),
             ),
@@ -321,7 +351,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
           Text(
             count,
             style: const TextStyle(
-              color: AppColors.textMuted,
+              color: AppColors.lightTextMuted,
               fontSize: 11,
             ),
           ),
@@ -330,7 +360,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
     );
   }
 
-  Widget _buildProductsGrid({required bool isDesktop}) {
+  Widget _buildProductsGrid({
+    required bool isDesktop,
+    required Color surfaceColor,
+    required Color borderColor,
+    required Color textColor,
+    required Color secondaryColor,
+  }) {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -343,12 +379,20 @@ class _ProductsScreenState extends State<ProductsScreen> {
       itemCount: Product.mockProducts.length,
       itemBuilder: (context, index) {
         final product = Product.mockProducts[index];
-        return _buildProductCardItem(context, product);
+        return _buildProductCardItem(
+            context, product, surfaceColor, borderColor, textColor, secondaryColor);
       },
     );
   }
 
-  Widget _buildProductCardItem(BuildContext context, Product product) {
+  Widget _buildProductCardItem(
+    BuildContext context,
+    Product product,
+    Color surfaceColor,
+    Color borderColor,
+    Color textColor,
+    Color secondaryColor,
+  ) {
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(
@@ -359,9 +403,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: surfaceColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.cardBorder),
+          border: Border.all(color: borderColor),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -377,7 +421,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       width: double.infinity,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) =>
-                          Container(color: AppColors.darkBackground),
+                          Container(color: surfaceColor),
                     ),
                   ),
                   if (product.isSellerListed)
@@ -428,16 +472,16 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 children: [
                   Text(
                     product.category,
-                    style: const TextStyle(
-                      color: AppColors.textSecondary,
+                    style: TextStyle(
+                      color: secondaryColor,
                       fontSize: 11,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     product.name,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: textColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
                     ),
@@ -448,15 +492,15 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   Text(
                     product.shopName,
                     style: const TextStyle(
-                      color: AppColors.textMuted,
+                      color: AppColors.lightTextMuted,
                       fontSize: 11,
                     ),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     product.displayPrice,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: textColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
                     ),
@@ -465,7 +509,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   const Text(
                     'Illustrative seller price',
                     style: TextStyle(
-                      color: AppColors.textMuted,
+                      color: AppColors.lightTextMuted,
                       fontSize: 10,
                     ),
                   ),
