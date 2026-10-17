@@ -12,7 +12,8 @@ class AccountScreen extends StatefulWidget {
 
 class _AccountScreenState extends State<AccountScreen> {
   int _authStep = 1; // 1: Phone input, 2: OTP verification, 3: Success
-  final TextEditingController _phoneController = TextEditingController(text: '801 234 5678');
+  final TextEditingController _phoneController =
+      TextEditingController(text: '801 234 5678');
 
   @override
   void dispose() {
@@ -26,10 +27,8 @@ class _AccountScreenState extends State<AccountScreen> {
     final bool isDesktop = width > 800;
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    final Color bgColor = isDarkMode ? AppColors.darkBackground : AppColors.lightBackground;
-    final Color surfaceColor = isDarkMode ? AppColors.darkSurface : AppColors.lightSurface;
-    final Color borderColor = isDarkMode ? AppColors.darkCardBorder : AppColors.lightCardBorder;
-    final Color textColor = isDarkMode ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final Color bgColor =
+        isDarkMode ? AppColors.darkBackground : AppColors.lightBackground;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -47,13 +46,18 @@ class _AccountScreenState extends State<AccountScreen> {
             ? Row(
                 children: [
                   Expanded(flex: 5, child: _buildLeftHeroBanner()),
-                  Expanded(flex: 5, child: Center(child: _buildAuthCard(surfaceColor, borderColor, textColor))),
+                  Expanded(
+                      flex: 5,
+                      child: Center(
+                          child: _buildAuthCard(
+                              Colors.white, AppColors.lightCardBorder, AppColors.lightTextPrimary))),
                 ],
               )
             : Padding(
                 padding: const EdgeInsets.all(20),
                 child: Center(
-                  child: _buildAuthCard(surfaceColor, borderColor, textColor),
+                  child: _buildAuthCard(
+                      Colors.white, AppColors.lightCardBorder, AppColors.lightTextPrimary),
                 ),
               ),
       ),
@@ -163,7 +167,7 @@ class _AccountScreenState extends State<AccountScreen> {
         const Text(
           'WELCOME TO LUMO',
           style: TextStyle(
-            color: AppColors.textMuted,
+            color: AppColors.lightTextMuted,
             fontSize: 11,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.2,
@@ -182,7 +186,7 @@ class _AccountScreenState extends State<AccountScreen> {
         const Text(
           "We'll send a secure verification code to your phone.",
           style: TextStyle(
-            color: AppColors.textSecondary,
+            color: AppColors.lightTextSecondary,
             fontSize: 13,
           ),
         ),
@@ -190,7 +194,7 @@ class _AccountScreenState extends State<AccountScreen> {
         const Text(
           'Phone number',
           style: TextStyle(
-            color: AppColors.textSecondary,
+            color: AppColors.lightTextSecondary,
             fontSize: 12,
             fontWeight: FontWeight.w600,
           ),
@@ -276,7 +280,7 @@ class _AccountScreenState extends State<AccountScreen> {
               padding: EdgeInsets.symmetric(horizontal: 12),
               child: Text(
                 'or',
-                style: TextStyle(color: AppColors.textMuted, fontSize: 12),
+                style: TextStyle(color: AppColors.lightTextMuted, fontSize: 12),
               ),
             ),
             Expanded(child: Divider(color: borderColor)),
@@ -318,7 +322,7 @@ class _AccountScreenState extends State<AccountScreen> {
           child: Text(
             'By continuing, you agree to Lumo\'s Terms of Service and Privacy Policy.',
             style: TextStyle(
-              color: AppColors.textMuted,
+              color: AppColors.lightTextMuted,
               fontSize: 10,
               height: 1.4,
             ),
@@ -355,7 +359,7 @@ class _AccountScreenState extends State<AccountScreen> {
         const Text(
           'PHONE VERIFICATION',
           style: TextStyle(
-            color: AppColors.textMuted,
+            color: AppColors.lightTextMuted,
             fontSize: 11,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.2,
@@ -374,7 +378,7 @@ class _AccountScreenState extends State<AccountScreen> {
         const Text(
           'Sent by SMS to +234 ••• ••• 5678. Never share this code with anyone.',
           style: TextStyle(
-            color: AppColors.textSecondary,
+            color: AppColors.lightTextSecondary,
             fontSize: 13,
             height: 1.4,
           ),
@@ -440,7 +444,7 @@ class _AccountScreenState extends State<AccountScreen> {
           child: Text(
             "Didn't receive it? Resend in 0:28",
             style: TextStyle(
-              color: AppColors.textSecondary,
+              color: AppColors.lightTextSecondary,
               fontSize: 12,
             ),
           ),
@@ -471,7 +475,7 @@ class _AccountScreenState extends State<AccountScreen> {
         const Text(
           'PHONE VERIFIED',
           style: TextStyle(
-            color: AppColors.textMuted,
+            color: AppColors.lightTextMuted,
             fontSize: 11,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.2,
@@ -490,7 +494,7 @@ class _AccountScreenState extends State<AccountScreen> {
         const Text(
           'Your Lumo account is ready. Start saving products and local shops.',
           style: TextStyle(
-            color: AppColors.textSecondary,
+            color: AppColors.lightTextSecondary,
             fontSize: 13,
             height: 1.4,
           ),

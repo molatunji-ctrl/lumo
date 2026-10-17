@@ -25,12 +25,12 @@ class AppColors {
   static const Color darkTextSecondary = Color(0xFF94A3B8);
   static const Color darkTextMuted = Color(0xFF64748B);
 
-  // Universal Aliases
-  static const Color surface = lightSurface;
-  static const Color cardBorder = lightCardBorder;
-  static const Color textPrimary = lightTextPrimary;
-  static const Color textSecondary = lightTextSecondary;
-  static const Color textMuted = lightTextMuted;
+  // Universal Aliases (Defaulting to Dark Mode as per screenshots)
+  static const Color surface = darkSurface;
+  static const Color cardBorder = darkCardBorder;
+  static const Color textPrimary = darkTextPrimary;
+  static const Color textSecondary = darkTextSecondary;
+  static const Color textMuted = darkTextMuted;
 
   // Status Colors
   static const Color error = Color(0xFFEF4444);

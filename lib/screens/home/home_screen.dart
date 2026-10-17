@@ -4,6 +4,7 @@ import '../../models/product.dart';
 import '../../widgets/app_bottom_navigation.dart';
 import 'widgets/home_header.dart';
 import 'widgets/hero_section.dart';
+import 'widgets/category_list.dart';
 import '../../core/routing/app_router.dart';
 import '../../core/theme/app_colors.dart';
 
@@ -43,9 +44,16 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
     final bool isDesktop = width > 800;
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    final Color bgColor = isDarkMode ? AppColors.darkBackground : AppColors.lightBackground;
+    final Color textColor = isDarkMode ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final Color surfaceColor = isDarkMode ? AppColors.darkSurface : AppColors.lightSurface;
+    final Color borderColor = isDarkMode ? AppColors.darkCardBorder : AppColors.lightCardBorder;
+    final Color secondaryColor = isDarkMode ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
 
     return Scaffold(
-      backgroundColor: AppColors.darkBackground,
+      backgroundColor: bgColor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -53,6 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               const HomeHeader(),
               const HeroSection(),
+              const CategoryList(),
 
               // Section 1: Products to discover
               Padding(
@@ -63,10 +72,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'Products to discover',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: textColor,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -75,10 +84,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       onTap: () {
                         Navigator.pushNamed(context, AppRouter.products);
                       },
-                      child: const Text(
+                      child: Text(
                         'View all products',
                         style: TextStyle(
-                          color: AppColors.textSecondary,
+                          color: secondaryColor,
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                         ),
@@ -95,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: isDesktop ? 4 : (width > 500 ? 2 : 2),
+                    crossAxisCount: isDesktop ? 4 : 2,
                     childAspectRatio: 0.8,
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 12,
@@ -104,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemBuilder: (context, index) {
                     final product = Product.mockProducts[
                         (index + 3) % Product.mockProducts.length];
-                    return _buildProductCard(context, product);
+                    return _buildProductCard(context, product, surfaceColor, borderColor, textColor, secondaryColor, isDarkMode);
                   },
                 ),
               ),
@@ -117,10 +126,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   horizontal: isDesktop ? 48 : 20,
                   vertical: 8,
                 ),
-                child: const Text(
+                child: Text(
                   'Local shops to discover',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: textColor,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -134,18 +143,18 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           Expanded(
                               child: _buildShopTile(
-                                  context, Shop.mockShops[0])),
+                                  context, Shop.mockShops[0], surfaceColor, borderColor, textColor, secondaryColor, isDarkMode)),
                           const SizedBox(width: 16),
                           Expanded(
                               child: _buildShopTile(
-                                  context, Shop.mockShops[1])),
+                                  context, Shop.mockShops[1], surfaceColor, borderColor, textColor, secondaryColor, isDarkMode)),
                         ],
                       )
                     : Column(
                         children: [
-                          _buildShopTile(context, Shop.mockShops[0]),
+                          _buildShopTile(context, Shop.mockShops[0], surfaceColor, borderColor, textColor, secondaryColor, isDarkMode),
                           const SizedBox(height: 12),
-                          _buildShopTile(context, Shop.mockShops[1]),
+                          _buildShopTile(context, Shop.mockShops[1], surfaceColor, borderColor, textColor, secondaryColor, isDarkMode),
                         ],
                       ),
               ),
@@ -160,16 +169,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Your next stop starts here',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: textColor,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 12),
-                    _buildMapBanner(context, isDesktop),
+                    _buildMapBanner(context, isDesktop, isDarkMode, surfaceColor, borderColor, textColor),
                   ],
                 ),
               ),
@@ -186,7 +195,15 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildProductCard(BuildContext context, Product product) {
+  Widget _buildProductCard(
+    BuildContext context,
+    Product product,
+    Color surfaceColor,
+    Color borderColor,
+    Color textColor,
+    Color secondaryColor,
+    bool isDarkMode,
+  ) {
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(
@@ -197,9 +214,9 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: surfaceColor,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.cardBorder),
+          border: Border.all(color: borderColor),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -213,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   width: double.infinity,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) =>
-                      Container(color: AppColors.darkBackground),
+                      Container(color: surfaceColor),
                 ),
               ),
             ),
@@ -224,8 +241,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Text(
                     product.name,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: textColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 13,
                     ),
@@ -243,8 +260,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 2),
                   Text(
                     product.displayPrice,
-                    style: const TextStyle(
-                      color: AppColors.textSecondary,
+                    style: TextStyle(
+                      color: secondaryColor,
                       fontSize: 11,
                     ),
                   ),
@@ -257,7 +274,15 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildShopTile(BuildContext context, Shop shop) {
+  Widget _buildShopTile(
+    BuildContext context,
+    Shop shop,
+    Color surfaceColor,
+    Color borderColor,
+    Color textColor,
+    Color secondaryColor,
+    bool isDarkMode,
+  ) {
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(
@@ -269,9 +294,9 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: surfaceColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.cardBorder),
+          border: Border.all(color: borderColor),
         ),
         child: Row(
           children: [
@@ -283,7 +308,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 70,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) =>
-                    Container(width: 70, height: 70, color: AppColors.darkBackground),
+                    Container(width: 70, height: 70, color: surfaceColor),
               ),
             ),
             const SizedBox(width: 12),
@@ -293,8 +318,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Text(
                     shop.name,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: textColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
                     ),
@@ -302,8 +327,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 2),
                   Text(
                     shop.category,
-                    style: const TextStyle(
-                      color: AppColors.textSecondary,
+                    style: TextStyle(
+                      color: secondaryColor,
                       fontSize: 12,
                     ),
                   ),
@@ -316,10 +341,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
+                  Text(
                     'Discover this shop',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: textColor,
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
                     ),
@@ -333,13 +358,20 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildMapBanner(BuildContext context, bool isDesktop) {
+  Widget _buildMapBanner(
+    BuildContext context,
+    bool isDesktop,
+    bool isDarkMode,
+    Color surfaceColor,
+    Color borderColor,
+    Color textColor,
+  ) {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: surfaceColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -349,7 +381,7 @@ class _HomeScreenState extends State<HomeScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: const Color(0xFF131D2E),
+              color: isDarkMode ? const Color(0xFF131D2E) : const Color(0xFFE5EDE6),
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(16)),
             ),
@@ -376,20 +408,20 @@ class _HomeScreenState extends State<HomeScreen> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: AppColors.darkBackground,
+                          color: surfaceColor,
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: AppColors.cardBorder),
+                          border: Border.all(color: borderColor),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.location_on,
+                            const Icon(Icons.location_on,
                                 color: AppColors.orange, size: 14),
-                            SizedBox(width: 4),
+                            const SizedBox(width: 4),
                             Text(
                               'Kora Collective',
                               style: TextStyle(
-                                  color: Colors.white,
+                                  color: textColor,
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold),
                             ),
@@ -397,10 +429,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      const Text(
+                      Text(
                         'Explore Ikeja on the map',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: textColor,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),

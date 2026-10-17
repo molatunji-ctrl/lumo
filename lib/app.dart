@@ -6,7 +6,7 @@ class ThemeController extends ChangeNotifier {
   static final ThemeController instance = ThemeController._();
   ThemeController._();
 
-  ThemeMode _themeMode = ThemeMode.dark; // Default to Dark mode as shown in mockups
+  ThemeMode _themeMode = ThemeMode.light; // Default to Light mode as requested
   ThemeMode get themeMode => _themeMode;
 
   void toggleTheme() {
