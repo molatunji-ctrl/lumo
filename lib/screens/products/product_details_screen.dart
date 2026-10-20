@@ -17,10 +17,6 @@ class ProductDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    final Product product = (item is Product)
-        ? item as Product
-        : Product.mockProducts[3]; // Everyday leather tote by default
-
     final double width = MediaQuery.of(context).size.width;
     final bool isDesktop = width > 800;
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;

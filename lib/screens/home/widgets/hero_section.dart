@@ -17,15 +17,6 @@ class HeroSection extends StatefulWidget {
 class _HeroSectionState extends State<HeroSection> {
   final TextEditingController _searchController = TextEditingController();
 
-  static const List<Map<String, dynamic>> categoryPills = [
-    {'title': 'Electronics', 'icon': Icons.devices_rounded},
-    {'title': 'Fashion', 'icon': Icons.checkroom_rounded},
-    {'title': 'Home', 'icon': Icons.home_rounded},
-    {'title': 'Phones', 'icon': Icons.phone_iphone_rounded},
-    {'title': 'Bags', 'icon': Icons.shopping_bag_rounded},
-    {'title': 'Footwear', 'icon': Icons.roller_skating_rounded},
-  ];
-
   @override
   void dispose() {
     _searchController.dispose();
@@ -52,85 +43,62 @@ class _HeroSectionState extends State<HeroSection> {
     final Color borderColor = isDarkMode ? AppColors.darkCardBorder : AppColors.lightCardBorder;
     final Color textColor = isDarkMode ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
     final Color secondaryColor = isDarkMode ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
-    final Color searchBgColor = isDarkMode ? AppColors.darkBackground : Colors.white;
+    final Color searchBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
 
     return Container(
       width: double.infinity,
       color: bgColor,
       padding: EdgeInsets.symmetric(
         horizontal: isDesktop ? 48 : 20,
-        vertical: isDesktop ? 32 : 16,
+        vertical: isDesktop ? 36 : 20,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Hero Card Container
-          Container(
-            padding: EdgeInsets.all(isDesktop ? 32 : 20),
-            decoration: BoxDecoration(
-              color: surfaceColor,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: borderColor),
-              boxShadow: isDarkMode
-                  ? []
-                  : [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.03),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-            ),
-            child: isDesktop
-                ? Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        flex: 5,
-                        child: _buildTextAndSearchContent(
-                          isDesktop: true,
-                          isDarkMode: isDarkMode,
-                          textColor: textColor,
-                          secondaryColor: secondaryColor,
-                          searchBgColor: searchBgColor,
-                          borderColor: borderColor,
-                        ),
-                      ),
-                      const SizedBox(width: 48),
-                      Expanded(
-                        flex: 5,
-                        child: _buildHeroImageCard(
-                          isDesktop: true,
-                          isDarkMode: isDarkMode,
-                          surfaceColor: surfaceColor,
-                          borderColor: borderColor,
-                        ),
-                      ),
-                    ],
-                  )
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildTextAndSearchContent(
-                        isDesktop: false,
-                        isDarkMode: isDarkMode,
-                        textColor: textColor,
-                        secondaryColor: secondaryColor,
-                        searchBgColor: searchBgColor,
-                        borderColor: borderColor,
-                      ),
-                      const SizedBox(height: 32),
-                      _buildHeroImageCard(
-                        isDesktop: false,
-                        isDarkMode: isDarkMode,
-                        surfaceColor: surfaceColor,
-                        borderColor: borderColor,
-                      ),
-                    ],
+      child: isDesktop
+          ? Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  flex: 5,
+                  child: _buildTextAndSearchContent(
+                    isDesktop: true,
+                    isDarkMode: isDarkMode,
+                    textColor: textColor,
+                    secondaryColor: secondaryColor,
+                    searchBgColor: searchBgColor,
+                    borderColor: borderColor,
                   ),
-          ),
-        ],
-      ),
+                ),
+                const SizedBox(width: 48),
+                Expanded(
+                  flex: 5,
+                  child: _buildHeroImageCard(
+                    isDesktop: true,
+                    isDarkMode: isDarkMode,
+                    surfaceColor: surfaceColor,
+                    borderColor: borderColor,
+                  ),
+                ),
+              ],
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildTextAndSearchContent(
+                  isDesktop: false,
+                  isDarkMode: isDarkMode,
+                  textColor: textColor,
+                  secondaryColor: secondaryColor,
+                  searchBgColor: searchBgColor,
+                  borderColor: borderColor,
+                ),
+                const SizedBox(height: 32),
+                _buildHeroImageCard(
+                  isDesktop: false,
+                  isDarkMode: isDarkMode,
+                  surfaceColor: surfaceColor,
+                  borderColor: borderColor,
+                ),
+              ],
+            ),
     );
   }
 
@@ -331,7 +299,7 @@ class _HeroSectionState extends State<HeroSection> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: isDarkMode
-                  ? const Color(0xFF281E1C).withOpacity(0.6)
+                  ? const Color(0x99281E1C)
                   : const Color(0xFFF5EBE6),
             ),
           ),
@@ -370,8 +338,8 @@ class _HeroSectionState extends State<HeroSection> {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
               color: isDarkMode
-                  ? const Color(0xFF131D2E).withOpacity(0.92)
-                  : Colors.white.withOpacity(0.92),
+                  ? const Color(0xFF131D2E).withValues(alpha: 0.92)
+                  : Colors.white.withValues(alpha: 0.92),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: borderColor,
@@ -379,7 +347,7 @@ class _HeroSectionState extends State<HeroSection> {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
+                  color: Colors.black.withValues(alpha: 0.08),
                   blurRadius: 8,
                 ),
               ],
@@ -414,8 +382,8 @@ class _HeroSectionState extends State<HeroSection> {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
               color: isDarkMode
-                  ? AppColors.darkSurface.withOpacity(0.95)
-                  : Colors.white.withOpacity(0.95),
+                  ? AppColors.darkSurface.withValues(alpha: 0.95)
+                  : Colors.white.withValues(alpha: 0.95),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: borderColor,
@@ -423,7 +391,7 @@ class _HeroSectionState extends State<HeroSection> {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.12),
+                  color: Colors.black.withValues(alpha: 0.12),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),

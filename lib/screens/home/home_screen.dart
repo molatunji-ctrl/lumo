@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../models/shop.dart';
 import '../../models/product.dart';
+import '../../models/market.dart';
 import '../../widgets/app_bottom_navigation.dart';
 import 'widgets/home_header.dart';
 import 'widgets/hero_section.dart';
 import 'widgets/category_list.dart';
+import 'widgets/featured_shops.dart';
 import '../../core/routing/app_router.dart';
 import '../../core/theme/app_colors.dart';
 
@@ -63,105 +65,9 @@ class _HomeScreenState extends State<HomeScreen> {
               const HeroSection(),
               const CategoryList(),
 
-              // Section 1: Products to discover
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: isDesktop ? 48 : 20,
-                  vertical: 12,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Products to discover',
-                      style: TextStyle(
-                        color: textColor,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, AppRouter.products);
-                      },
-                      child: Text(
-                        'View all products',
-                        style: TextStyle(
-                          color: secondaryColor,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Product Grid
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 20),
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: isDesktop ? 4 : 2,
-                    childAspectRatio: 0.8,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                  ),
-                  itemCount: 4,
-                  itemBuilder: (context, index) {
-                    final product = Product.mockProducts[
-                        (index + 3) % Product.mockProducts.length];
-                    return _buildProductCard(context, product, surfaceColor, borderColor, textColor, secondaryColor, isDarkMode);
-                  },
-                ),
-              ),
-
               const SizedBox(height: 24),
 
-              // Section 2: Local shops to discover
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: isDesktop ? 48 : 20,
-                  vertical: 8,
-                ),
-                child: Text(
-                  'Local shops to discover',
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 20),
-                child: isDesktop
-                    ? Row(
-                        children: [
-                          Expanded(
-                              child: _buildShopTile(
-                                  context, Shop.mockShops[0], surfaceColor, borderColor, textColor, secondaryColor, isDarkMode)),
-                          const SizedBox(width: 16),
-                          Expanded(
-                              child: _buildShopTile(
-                                  context, Shop.mockShops[1], surfaceColor, borderColor, textColor, secondaryColor, isDarkMode)),
-                        ],
-                      )
-                    : Column(
-                        children: [
-                          _buildShopTile(context, Shop.mockShops[0], surfaceColor, borderColor, textColor, secondaryColor, isDarkMode),
-                          const SizedBox(height: 12),
-                          _buildShopTile(context, Shop.mockShops[1], surfaceColor, borderColor, textColor, secondaryColor, isDarkMode),
-                        ],
-                      ),
-              ),
-
-              const SizedBox(height: 32),
-
-              // Section 3: Your next stop starts here
+              // Section 1: DISCOVER -> Popular near Ikeja
               Padding(
                 padding: EdgeInsets.symmetric(
                   horizontal: isDesktop ? 48 : 20,
@@ -169,16 +75,152 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Your next stop starts here',
+                    const Text(
+                      'DISCOVER',
                       style: TextStyle(
-                        color: textColor,
-                        fontSize: 18,
+                        color: AppColors.orange,
+                        fontSize: 11,
                         fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    _buildMapBanner(context, isDesktop, isDarkMode, surfaceColor, borderColor, textColor),
+                    const SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Popular near Ikeja',
+                          style: TextStyle(
+                            color: textColor,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, AppRouter.products);
+                          },
+                          child: Row(
+                            children: [
+                              Text(
+                                'See all products',
+                                style: TextStyle(
+                                  color: secondaryColor,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Icon(
+                                Icons.arrow_forward_rounded,
+                                size: 14,
+                                color: secondaryColor,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Popular Products Grid
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 20),
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: isDesktop ? 3 : (width > 500 ? 2 : 1),
+                    childAspectRatio: isDesktop ? 0.9 : 0.82,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                  ),
+                  itemCount: 3,
+                  itemBuilder: (context, index) {
+                    final product = Product.mockProducts[index % Product.mockProducts.length];
+                    return _buildPopularProductCard(
+                        context, product, surfaceColor, borderColor, textColor, secondaryColor);
+                  },
+                ),
+              ),
+
+              const SizedBox(height: 32),
+
+              // Section 2: NEAR YOU -> Shops worth a visit
+              FeaturedShops(shops: Shop.mockShops),
+
+              const SizedBox(height: 32),
+
+              // Section 3: Markets to explore
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: isDesktop ? 48 : 20,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Markets to explore',
+                          style: TextStyle(
+                            color: textColor,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, AppRouter.markets);
+                          },
+                          child: Row(
+                            children: [
+                              Text(
+                                'Explore markets',
+                                style: TextStyle(
+                                  color: secondaryColor,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Icon(
+                                Icons.arrow_forward_rounded,
+                                size: 14,
+                                color: secondaryColor,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    isDesktop
+                        ? Row(
+                            children: [
+                              Expanded(
+                                  child: _buildMarketTile(
+                                      context, Market.mockMarkets[0], surfaceColor, borderColor, textColor, secondaryColor)),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                  child: _buildMarketTile(
+                                      context, Market.mockMarkets[1], surfaceColor, borderColor, textColor, secondaryColor)),
+                            ],
+                          )
+                        : Column(
+                            children: [
+                              _buildMarketTile(
+                                  context, Market.mockMarkets[0], surfaceColor, borderColor, textColor, secondaryColor),
+                              const SizedBox(height: 12),
+                              _buildMarketTile(
+                                  context, Market.mockMarkets[1], surfaceColor, borderColor, textColor, secondaryColor),
+                            ],
+                          ),
                   ],
                 ),
               ),
@@ -195,14 +237,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildProductCard(
+  Widget _buildPopularProductCard(
     BuildContext context,
     Product product,
     Color surfaceColor,
     Color borderColor,
     Color textColor,
     Color secondaryColor,
-    bool isDarkMode,
   ) {
     return GestureDetector(
       onTap: () {
@@ -215,54 +256,113 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Container(
         decoration: BoxDecoration(
           color: surfaceColor,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(color: borderColor),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: ClipRRect(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(12)),
-                child: Image.network(
-                  product.imageUrl,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) =>
-                      Container(color: surfaceColor),
-                ),
+              child: Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(16)),
+                    child: Image.network(
+                      product.imageUrl,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          Container(color: surfaceColor),
+                    ),
+                  ),
+                  if (product.isSellerListed)
+                    Positioned(
+                      bottom: 10,
+                      left: 10,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Text(
+                          'Seller listed',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  Positioned(
+                    top: 10,
+                    right: 10,
+                    child: Container(
+                      width: 28,
+                      height: 28,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.favorite_border,
+                        color: Colors.black,
+                        size: 16,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Text(
+                    product.category,
+                    style: TextStyle(
+                      color: secondaryColor,
+                      fontSize: 11,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
                   Text(
                     product.name,
                     style: TextStyle(
                       color: textColor,
                       fontWeight: FontWeight.bold,
-                      fontSize: 13,
+                      fontSize: 14,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Sample listing · ${product.shopLocation}',
+                    product.shopName,
                     style: const TextStyle(
-                      color: AppColors.textMuted,
-                      fontSize: 10,
+                      color: AppColors.lightTextMuted,
+                      fontSize: 11,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 6),
                   Text(
                     product.displayPrice,
                     style: TextStyle(
-                      color: secondaryColor,
-                      fontSize: 11,
+                      color: textColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  const Text(
+                    'Illustrative seller price',
+                    style: TextStyle(
+                      color: AppColors.lightTextMuted,
+                      fontSize: 10,
                     ),
                   ),
                 ],
@@ -274,22 +374,17 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildShopTile(
+  Widget _buildMarketTile(
     BuildContext context,
-    Shop shop,
+    Market market,
     Color surfaceColor,
     Color borderColor,
     Color textColor,
     Color secondaryColor,
-    bool isDarkMode,
   ) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(
-          context,
-          AppRouter.shopDetails,
-          arguments: shop,
-        );
+        Navigator.pushNamed(context, AppRouter.markets);
       },
       child: Container(
         padding: const EdgeInsets.all(12),
@@ -303,12 +398,12 @@ class _HomeScreenState extends State<HomeScreen> {
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Image.network(
-                shop.imageUrl,
-                width: 70,
-                height: 70,
+                market.imageUrl,
+                width: 64,
+                height: 64,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) =>
-                    Container(width: 70, height: 70, color: surfaceColor),
+                    Container(width: 64, height: 64, color: surfaceColor),
               ),
             ),
             const SizedBox(width: 12),
@@ -317,7 +412,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    shop.name,
+                    market.name,
                     style: TextStyle(
                       color: textColor,
                       fontWeight: FontWeight.bold,
@@ -326,154 +421,24 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    shop.category,
+                    '${market.location} · ${market.description}',
                     style: TextStyle(
                       color: secondaryColor,
                       fontSize: 12,
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  const Text(
-                    'Sample shop · Identity unverified',
-                    style: TextStyle(
-                      color: AppColors.textMuted,
-                      fontSize: 10,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Discover this shop',
-                    style: TextStyle(
-                      color: textColor,
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
             ),
+            Icon(
+              Icons.arrow_forward_rounded,
+              color: textColor,
+              size: 18,
+            ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildMapBanner(
-    BuildContext context,
-    bool isDesktop,
-    bool isDarkMode,
-    Color surfaceColor,
-    Color borderColor,
-    Color textColor,
-  ) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: surfaceColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: borderColor),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: isDesktop ? 220 : 160,
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: isDarkMode ? const Color(0xFF131D2E) : const Color(0xFFE5EDE6),
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(16)),
-            ),
-            child: Stack(
-              children: [
-                const Positioned(
-                  top: 10,
-                  left: 10,
-                  child: Text(
-                    'IKEJA',
-                    style: TextStyle(
-                      color: AppColors.textMuted,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.5,
-                    ),
-                  ),
-                ),
-                Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: surfaceColor,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: borderColor),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.location_on,
-                                color: AppColors.orange, size: 14),
-                            const SizedBox(width: 4),
-                            Text(
-                              'Kora Collective',
-                              style: TextStyle(
-                                  color: textColor,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        'Explore Ikeja on the map',
-                        style: TextStyle(
-                          color: textColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const Text(
-                        'Illustrative preview - Browse the place list for sample shops. Not a live map.',
-                        style: TextStyle(
-                          color: AppColors.textMuted,
-                          fontSize: 11,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.orange,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              onPressed: () {
-                Navigator.pushNamed(context, AppRouter.nearby);
-              },
-              child: const Text(
-                'Explore all nearby places',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
