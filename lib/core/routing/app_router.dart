@@ -1,4 +1,9 @@
+
 import 'package:flutter/material.dart';
+
+import '../../models/product.dart';
+import '../../models/shop.dart';
+
 import '../../screens/splash/splash_screen.dart';
 import '../../screens/home/home_screen.dart';
 import '../../screens/search/search_screen.dart';
@@ -9,9 +14,10 @@ import '../../screens/markets/markets_screen.dart';
 import '../../screens/nearby/nearby_shops_screen.dart';
 import '../../screens/favourites/favourites_screen.dart';
 import '../../screens/account/account_screen.dart';
-import '../../models/shop.dart';
 
 class AppRouter {
+  AppRouter._();
+
   static const String splash = '/';
   static const String home = '/home';
   static const String search = '/search';
@@ -26,31 +32,141 @@ class AppRouter {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case splash:
-        return MaterialPageRoute(builder: (_) => const SplashScreen());
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (_) => const SplashScreen(),
+        );
+
       case home:
-        return MaterialPageRoute(builder: (_) => const HomeScreen());
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (_) => const HomeScreen(),
+        );
+
       case search:
-        return MaterialPageRoute(builder: (_) => const SearchScreen());
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (_) => const SearchScreen(),
+        );
+
       case products:
-        return MaterialPageRoute(builder: (_) => const ProductsScreen());
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (_) => const ProductsScreen(),
+        );
+
       case productDetails:
-        return MaterialPageRoute(
-          builder: (_) => ProductDetailsScreen(item: settings.arguments),
+        final Object? arguments = settings.arguments;
+
+        if (arguments is! Product) {
+          return _errorRoute(
+            settings,
+            'Invalid product',
+            'Product details require a valid Product object.',
+          );
+        }
+
+        return MaterialPageRoute<void>(
+          settings: settings,
+            builder: (_) => ProductDetailsScreen(product: arguments),
+
         );
+
       case shopDetails:
-        return MaterialPageRoute(
-          builder: (_) => ShopDetailsScreen(shop: settings.arguments as Shop?),
+        final Object? arguments = settings.arguments;
+
+        if (arguments is! Shop) {
+          return _errorRoute(
+            settings,
+            'Invalid shop',
+            'Shop details require a valid Shop object.',
+          );
+        }
+
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (_) => ShopDetailsScreen(shop: arguments),
         );
+
       case markets:
-        return MaterialPageRoute(builder: (_) => const MarketsScreen());
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (_) => const MarketsScreen(),
+        );
+
       case nearby:
-        return MaterialPageRoute(builder: (_) => const NearbyShopsScreen());
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (_) => const NearbyShopsScreen(),
+        );
+
       case favourites:
-        return MaterialPageRoute(builder: (_) => const FavouritesScreen());
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (_) => const FavouritesScreen(),
+        );
+
       case account:
-        return MaterialPageRoute(builder: (_) => const AccountScreen());
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (_) => const AccountScreen(),
+        );
+
       default:
-        return MaterialPageRoute(builder: (_) => const HomeScreen());
+        return _errorRoute(
+          settings,
+          'Page not found',
+          'The requested page "${settings.name ?? ''}" does not exist.',
+        );
     }
+  }
+
+  static MaterialPageRoute<void> _errorRoute(
+      RouteSettings settings,
+      String title,
+      String message,
+      ) {
+    return MaterialPageRoute<void>(
+      settings: settings,
+      builder: (context) => Scaffold(
+        appBar: AppBar(title: Text(title)),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.warning_amber_rounded,
+                  size: 48,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleLarge,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                FilledButton(
+                  onPressed: () {
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      home,
+                          (route) => false,
+                    );
+                  },
+                  child: const Text('Return to home'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

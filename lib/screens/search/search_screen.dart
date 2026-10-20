@@ -127,10 +127,11 @@ class _SearchScreenState extends State<SearchScreen> {
                         onTap: () {
                           Navigator.pushNamed(
                             context,
-                            AppRouter.productDetails,
+                            AppRouter.shopDetails,
                             arguments: shop,
                           );
-                        },
+                          },
+
                       );
                     },
                   ),

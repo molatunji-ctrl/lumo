@@ -5,12 +5,18 @@ import '../../models/shop.dart';
 import '../../core/routing/app_router.dart';
 
 class ProductDetailsScreen extends StatelessWidget {
-  final Object? item;
 
-  const ProductDetailsScreen({super.key, this.item});
+  final Product product;
+
+  const ProductDetailsScreen({
+    super.key,
+    required this.product,
+  });
+
 
   @override
   Widget build(BuildContext context) {
+
     final Product product = (item is Product)
         ? item as Product
         : Product.mockProducts[3]; // Everyday leather tote by default
