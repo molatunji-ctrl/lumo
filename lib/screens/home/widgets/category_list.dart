@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/routing/app_router.dart';
 
@@ -18,12 +19,28 @@ class CategoryList extends StatelessWidget {
   const CategoryList({super.key});
 
   static const List<CategoryCardItem> categories = [
-    CategoryCardItem(title: 'Phones', code: 'PH', icon: Icons.phone_iphone_rounded),
-    CategoryCardItem(title: 'Fashion', code: 'FA', icon: Icons.checkroom_rounded),
+    CategoryCardItem(
+      title: 'Phones',
+      code: 'PH',
+      icon: Icons.phone_iphone_rounded,
+    ),
+    CategoryCardItem(
+      title: 'Fashion',
+      code: 'FA',
+      icon: Icons.checkroom_rounded,
+    ),
     CategoryCardItem(title: 'Home', code: 'HO', icon: Icons.home_rounded),
     CategoryCardItem(title: 'Beauty', code: 'BE', icon: Icons.face_rounded),
-    CategoryCardItem(title: 'Groceries', code: 'GR', icon: Icons.shopping_basket_rounded),
-    CategoryCardItem(title: 'Computing', code: 'CO', icon: Icons.computer_rounded),
+    CategoryCardItem(
+      title: 'Groceries',
+      code: 'GR',
+      icon: Icons.shopping_basket_rounded,
+    ),
+    CategoryCardItem(
+      title: 'Computing',
+      code: 'CO',
+      icon: Icons.computer_rounded,
+    ),
   ];
 
   @override
@@ -32,10 +49,18 @@ class CategoryList extends StatelessWidget {
     final bool isDesktop = width > 800;
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    final Color textColor = isDarkMode ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final Color surfaceColor = isDarkMode ? AppColors.darkSurface : AppColors.lightSurface;
-    final Color borderColor = isDarkMode ? AppColors.darkCardBorder : AppColors.lightCardBorder;
-    final Color secondaryColor = isDarkMode ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final Color textColor = isDarkMode
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final Color surfaceColor = isDarkMode
+        ? AppColors.darkSurface
+        : AppColors.lightSurface;
+    final Color borderColor = isDarkMode
+        ? AppColors.darkCardBorder
+        : AppColors.lightCardBorder;
+    final Color secondaryColor = isDarkMode
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
 
     return Padding(
       padding: EdgeInsets.symmetric(
@@ -107,9 +132,13 @@ class CategoryList extends StatelessWidget {
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 6),
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
-                            color: isDarkMode ? AppColors.darkBackground : AppColors.lightBackground,
+                            color: isDarkMode
+                                ? AppColors.darkBackground
+                                : AppColors.lightBackground,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: borderColor),
                           ),

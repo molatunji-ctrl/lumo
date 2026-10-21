@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../../models/product.dart';
@@ -44,9 +43,10 @@ class AppRouter {
         );
 
       case search:
+        final query = settings.arguments as String?;
         return MaterialPageRoute<void>(
           settings: settings,
-          builder: (_) => const SearchScreen(),
+          builder: (_) => SearchScreen(initialQuery: query),
         );
 
       case products:
@@ -68,8 +68,7 @@ class AppRouter {
 
         return MaterialPageRoute<void>(
           settings: settings,
-            builder: (_) => ProductDetailsScreen(product: arguments),
-
+          builder: (_) => ProductDetailsScreen(product: arguments),
         );
 
       case shopDetails:
@@ -122,10 +121,10 @@ class AppRouter {
   }
 
   static MaterialPageRoute<void> _errorRoute(
-      RouteSettings settings,
-      String title,
-      String message,
-      ) {
+    RouteSettings settings,
+    String title,
+    String message,
+  ) {
     return MaterialPageRoute<void>(
       settings: settings,
       builder: (context) => Scaffold(
@@ -136,10 +135,7 @@ class AppRouter {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(
-                  Icons.warning_amber_rounded,
-                  size: 48,
-                ),
+                const Icon(Icons.warning_amber_rounded, size: 48),
                 const SizedBox(height: 16),
                 Text(
                   title,
@@ -147,17 +143,14 @@ class AppRouter {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  message,
-                  textAlign: TextAlign.center,
-                ),
+                Text(message, textAlign: TextAlign.center),
                 const SizedBox(height: 24),
                 FilledButton(
                   onPressed: () {
                     Navigator.pushNamedAndRemoveUntil(
                       context,
                       home,
-                          (route) => false,
+                      (route) => false,
                     );
                   },
                   child: const Text('Return to home'),

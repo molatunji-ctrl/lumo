@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../app.dart';
 import '../../../core/routing/app_router.dart';
@@ -21,11 +22,21 @@ class HomeHeader extends StatelessWidget {
     final bool isDesktop = width > 800;
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    final Color bgColor = isDarkMode ? AppColors.darkBackground : AppColors.lightBackground;
-    final Color textColor = isDarkMode ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final Color surfaceColor = isDarkMode ? AppColors.darkSurface : AppColors.lightSurface;
-    final Color borderColor = isDarkMode ? AppColors.darkCardBorder : AppColors.lightCardBorder;
-    final Color secondaryColor = isDarkMode ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final Color bgColor = isDarkMode
+        ? AppColors.darkBackground
+        : AppColors.lightBackground;
+    final Color textColor = isDarkMode
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final Color surfaceColor = isDarkMode
+        ? AppColors.darkSurface
+        : AppColors.lightSurface;
+    final Color borderColor = isDarkMode
+        ? AppColors.darkCardBorder
+        : AppColors.lightCardBorder;
+    final Color secondaryColor = isDarkMode
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
 
     return Container(
       color: bgColor,
@@ -51,19 +62,40 @@ class HomeHeader extends StatelessWidget {
           if (isDesktop)
             Row(
               children: [
-                _buildNavLink('Discover', isActive: true, textColor: textColor, secondaryColor: secondaryColor, onTap: () {}),
+                _buildNavLink(
+                  'Discover',
+                  isActive: true,
+                  textColor: textColor,
+                  secondaryColor: secondaryColor,
+                  onTap: () {},
+                ),
                 const SizedBox(width: 24),
-                _buildNavLink('Products', textColor: textColor, secondaryColor: secondaryColor, onTap: () {
-                  Navigator.pushNamed(context, AppRouter.products);
-                }),
+                _buildNavLink(
+                  'Products',
+                  textColor: textColor,
+                  secondaryColor: secondaryColor,
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRouter.products);
+                  },
+                ),
                 const SizedBox(width: 24),
-                _buildNavLink('Markets', textColor: textColor, secondaryColor: secondaryColor, onTap: () {
-                  Navigator.pushNamed(context, AppRouter.markets);
-                }),
+                _buildNavLink(
+                  'Markets',
+                  textColor: textColor,
+                  secondaryColor: secondaryColor,
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRouter.markets);
+                  },
+                ),
                 const SizedBox(width: 24),
-                _buildNavLink('Nearby shops', textColor: textColor, secondaryColor: secondaryColor, onTap: () {
-                  Navigator.pushNamed(context, AppRouter.nearby);
-                }),
+                _buildNavLink(
+                  'Nearby shops',
+                  textColor: textColor,
+                  secondaryColor: secondaryColor,
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRouter.nearby);
+                  },
+                ),
               ],
             ),
 
@@ -115,7 +147,9 @@ class HomeHeader extends StatelessWidget {
 
               // Theme Toggle Icon Button
               _buildIconButton(
-                icon: isDarkMode ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                icon: isDarkMode
+                    ? Icons.light_mode_outlined
+                    : Icons.dark_mode_outlined,
                 surfaceColor: surfaceColor,
                 borderColor: borderColor,
                 iconColor: textColor,
@@ -218,11 +252,7 @@ class HomeHeader extends StatelessWidget {
           shape: BoxShape.circle,
           border: Border.all(color: borderColor),
         ),
-        child: Icon(
-          icon,
-          color: iconColor,
-          size: 18,
-        ),
+        child: Icon(icon, color: iconColor, size: 18),
       ),
     );
   }

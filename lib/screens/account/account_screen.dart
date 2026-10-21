@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../core/theme/app_colors.dart';
 import '../../widgets/app_bottom_navigation.dart';
 import '../../core/routing/app_router.dart';
@@ -12,8 +13,9 @@ class AccountScreen extends StatefulWidget {
 
 class _AccountScreenState extends State<AccountScreen> {
   int _authStep = 1; // 1: Phone input, 2: OTP verification, 3: Success
-  final TextEditingController _phoneController =
-      TextEditingController(text: '801 234 5678');
+  final TextEditingController _phoneController = TextEditingController(
+    text: '801 234 5678',
+  );
 
   @override
   void dispose() {
@@ -27,8 +29,9 @@ class _AccountScreenState extends State<AccountScreen> {
     final bool isDesktop = width > 800;
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    final Color bgColor =
-        isDarkMode ? AppColors.darkBackground : AppColors.lightBackground;
+    final Color bgColor = isDarkMode
+        ? AppColors.darkBackground
+        : AppColors.lightBackground;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -47,17 +50,25 @@ class _AccountScreenState extends State<AccountScreen> {
                 children: [
                   Expanded(flex: 5, child: _buildLeftHeroBanner()),
                   Expanded(
-                      flex: 5,
-                      child: Center(
-                          child: _buildAuthCard(
-                              Colors.white, AppColors.lightCardBorder, AppColors.lightTextPrimary))),
+                    flex: 5,
+                    child: Center(
+                      child: _buildAuthCard(
+                        Colors.white,
+                        AppColors.lightCardBorder,
+                        AppColors.lightTextPrimary,
+                      ),
+                    ),
+                  ),
                 ],
               )
             : Padding(
                 padding: const EdgeInsets.all(20),
                 child: Center(
                   child: _buildAuthCard(
-                      Colors.white, AppColors.lightCardBorder, AppColors.lightTextPrimary),
+                    Colors.white,
+                    AppColors.lightCardBorder,
+                    AppColors.lightTextPrimary,
+                  ),
                 ),
               ),
       ),
@@ -65,10 +76,14 @@ class _AccountScreenState extends State<AccountScreen> {
         currentIndex: 4,
         onTap: (index) {
           if (index == 4) return;
-          if (index == 0) Navigator.pushReplacementNamed(context, AppRouter.home);
-          if (index == 1) Navigator.pushReplacementNamed(context, AppRouter.search);
-          if (index == 2) Navigator.pushReplacementNamed(context, AppRouter.nearby);
-          if (index == 3) Navigator.pushReplacementNamed(context, AppRouter.favourites);
+          if (index == 0)
+            Navigator.pushReplacementNamed(context, AppRouter.home);
+          if (index == 1)
+            Navigator.pushReplacementNamed(context, AppRouter.search);
+          if (index == 2)
+            Navigator.pushReplacementNamed(context, AppRouter.nearby);
+          if (index == 3)
+            Navigator.pushReplacementNamed(context, AppRouter.favourites);
         },
       ),
     );
@@ -80,7 +95,8 @@ class _AccountScreenState extends State<AccountScreen> {
       decoration: const BoxDecoration(
         image: DecorationImage(
           image: NetworkImage(
-              'https://images.unsplash.com/photo-1533900298318-6b8da08a523e?q=80&w=1000&auto=format&fit=crop'),
+            'https://images.unsplash.com/photo-1533900298318-6b8da08a523e?q=80&w=1000&auto=format&fit=crop',
+          ),
           fit: BoxFit.cover,
         ),
       ),
@@ -134,7 +150,11 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  Widget _buildAuthCard(Color surfaceColor, Color borderColor, Color textColor) {
+  Widget _buildAuthCard(
+    Color surfaceColor,
+    Color borderColor,
+    Color textColor,
+  ) {
     return Container(
       width: 440,
       margin: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
@@ -154,8 +174,8 @@ class _AccountScreenState extends State<AccountScreen> {
       child: _authStep == 1
           ? _buildStep1PhoneInput(textColor, borderColor)
           : _authStep == 2
-              ? _buildStep2OtpInput(textColor, borderColor)
-              : _buildStep3Success(textColor),
+          ? _buildStep2OtpInput(textColor, borderColor)
+          : _buildStep3Success(textColor),
     );
   }
 
@@ -185,10 +205,7 @@ class _AccountScreenState extends State<AccountScreen> {
         const SizedBox(height: 6),
         const Text(
           "We'll send a secure verification code to your phone.",
-          style: TextStyle(
-            color: AppColors.lightTextSecondary,
-            fontSize: 13,
-          ),
+          style: TextStyle(color: AppColors.lightTextSecondary, fontSize: 13),
         ),
         const SizedBox(height: 24),
         const Text(
@@ -208,7 +225,10 @@ class _AccountScreenState extends State<AccountScreen> {
           child: Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 14,
+                ),
                 decoration: BoxDecoration(
                   border: Border(right: BorderSide(color: borderColor)),
                 ),
@@ -267,7 +287,11 @@ class _AccountScreenState extends State<AccountScreen> {
                   ),
                 ),
                 SizedBox(width: 8),
-                Icon(Icons.arrow_forward_rounded, size: 16, color: Colors.white),
+                Icon(
+                  Icons.arrow_forward_rounded,
+                  size: 16,
+                  color: Colors.white,
+                ),
               ],
             ),
           ),
@@ -408,7 +432,10 @@ class _AccountScreenState extends State<AccountScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: AppColors.orange, width: 2),
+                    borderSide: const BorderSide(
+                      color: AppColors.orange,
+                      width: 2,
+                    ),
                   ),
                 ),
               ),
@@ -443,10 +470,7 @@ class _AccountScreenState extends State<AccountScreen> {
         const Center(
           child: Text(
             "Didn't receive it? Resend in 0:28",
-            style: TextStyle(
-              color: AppColors.lightTextSecondary,
-              fontSize: 12,
-            ),
+            style: TextStyle(color: AppColors.lightTextSecondary, fontSize: 12),
           ),
         ),
       ],
@@ -465,11 +489,7 @@ class _AccountScreenState extends State<AccountScreen> {
             color: AppColors.green,
             shape: BoxShape.circle,
           ),
-          child: const Icon(
-            Icons.check,
-            color: Colors.white,
-            size: 36,
-          ),
+          child: const Icon(Icons.check, color: Colors.white, size: 36),
         ),
         const SizedBox(height: 20),
         const Text(

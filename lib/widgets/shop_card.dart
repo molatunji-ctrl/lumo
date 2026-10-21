@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../models/shop.dart';
 import '../core/theme/app_colors.dart';
 
@@ -6,20 +7,24 @@ class ShopCard extends StatelessWidget {
   final Shop shop;
   final VoidCallback onTap;
 
-  const ShopCard({
-    super.key,
-    required this.shop,
-    required this.onTap,
-  });
+  const ShopCard({super.key, required this.shop, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    final Color surfaceColor = isDarkMode ? AppColors.darkSurface : AppColors.lightSurface;
-    final Color borderColor = isDarkMode ? AppColors.darkCardBorder : AppColors.lightCardBorder;
-    final Color textColor = isDarkMode ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final Color secondaryColor = isDarkMode ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final Color surfaceColor = isDarkMode
+        ? AppColors.darkSurface
+        : AppColors.lightSurface;
+    final Color borderColor = isDarkMode
+        ? AppColors.darkCardBorder
+        : AppColors.lightCardBorder;
+    final Color textColor = isDarkMode
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final Color secondaryColor = isDarkMode
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
 
     return GestureDetector(
       onTap: onTap,
@@ -43,7 +48,9 @@ class ShopCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
+              ),
               child: Stack(
                 children: [
                   Image.network(
@@ -56,7 +63,11 @@ class ShopCard extends StatelessWidget {
                         height: 140,
                         color: surfaceColor,
                         child: const Center(
-                          child: Icon(Icons.store, color: AppColors.orange, size: 48),
+                          child: Icon(
+                            Icons.store,
+                            color: AppColors.orange,
+                            size: 48,
+                          ),
                         ),
                       );
                     },
@@ -65,7 +76,10 @@ class ShopCard extends StatelessWidget {
                     top: 12,
                     right: 12,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: shop.isOpen ? AppColors.green : AppColors.error,
                         borderRadius: BorderRadius.circular(12),
@@ -122,18 +136,18 @@ class ShopCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     shop.description,
-                    style: TextStyle(
-                      color: secondaryColor,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: secondaryColor, fontSize: 12),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      const Icon(Icons.location_on_outlined,
-                          size: 14, color: AppColors.orange),
+                      const Icon(
+                        Icons.location_on_outlined,
+                        size: 14,
+                        color: AppColors.orange,
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         '${shop.marketName} • ${shop.distance}',

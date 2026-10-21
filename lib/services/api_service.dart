@@ -27,8 +27,11 @@ class ApiService {
     await _delay();
     if (query.isEmpty) return Shop.mockShops;
     return Shop.mockShops
-        .where((s) => s.name.toLowerCase().contains(query.toLowerCase()) ||
-            s.description.toLowerCase().contains(query.toLowerCase()))
+        .where(
+          (s) =>
+              s.name.toLowerCase().contains(query.toLowerCase()) ||
+              s.description.toLowerCase().contains(query.toLowerCase()),
+        )
         .toList();
   }
 }

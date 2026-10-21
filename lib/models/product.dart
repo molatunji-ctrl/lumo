@@ -28,7 +28,8 @@ class Product {
   });
 
   String get displayPrice =>
-      formattedPrice ?? (price != null ? '₦${price!.toStringAsFixed(0)}' : 'Price not provided');
+      formattedPrice ??
+      (price != null ? '₦${price!.toStringAsFixed(0)}' : 'Price not provided');
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
@@ -81,7 +82,8 @@ class Product {
     Product(
       id: 'p2',
       name: 'Nike Air Max 270',
-      description: 'Breathable lightweight running sneakers with premium cushion sole.',
+      description:
+          'Breathable lightweight running sneakers with premium cushion sole.',
       price: 85000,
       formattedPrice: '₦85,000',
       imageUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop',
@@ -119,7 +121,8 @@ class Product {
     Product(
       id: 'p5',
       name: 'Classic white sneakers',
-      description: 'Versatile low-top leather sneakers built for everyday comfort.',
+      description:
+          'Versatile low-top leather sneakers built for everyday comfort.',
       formattedPrice: 'Price not provided',
       imageUrl: 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?q=80&w=800&auto=format&fit=crop',
       shopName: 'Kora Collective',
@@ -143,7 +146,8 @@ class Product {
     Product(
       id: 'p7',
       name: 'Silver everyday watch',
-      description: 'Minimalist stainless steel analog timepiece with water resistance.',
+      description:
+          'Minimalist stainless steel analog timepiece with water resistance.',
       formattedPrice: 'Price not provided',
       imageUrl: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800&auto=format&fit=crop',
       shopName: 'Lagos Timepieces',

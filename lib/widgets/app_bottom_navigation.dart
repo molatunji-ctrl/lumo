@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../core/theme/app_colors.dart';
 
 class AppBottomNavigation extends StatelessWidget {
@@ -15,16 +16,20 @@ class AppBottomNavigation extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    final Color navBgColor = isDarkMode ? AppColors.darkBackground : Colors.white;
-    final Color borderColor = isDarkMode ? AppColors.darkCardBorder : AppColors.lightCardBorder;
-    final Color unselectedColor = isDarkMode ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final Color navBgColor = isDarkMode
+        ? AppColors.darkBackground
+        : Colors.white;
+    final Color borderColor = isDarkMode
+        ? AppColors.darkCardBorder
+        : AppColors.lightCardBorder;
+    final Color unselectedColor = isDarkMode
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
 
     return Container(
       decoration: BoxDecoration(
         color: navBgColor,
-        border: Border(
-          top: BorderSide(color: borderColor, width: 1),
-        ),
+        border: Border(top: BorderSide(color: borderColor, width: 1)),
       ),
       child: BottomNavigationBar(
         currentIndex: currentIndex,

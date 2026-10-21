@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../core/theme/app_colors.dart';
 import '../../models/product.dart';
 import '../../core/routing/app_router.dart';
@@ -30,17 +31,25 @@ class _ProductsScreenState extends State<ProductsScreen> {
     final bool isDesktop = width > 800;
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    final Color bgColor = isDarkMode ? AppColors.darkBackground : AppColors.lightBackground;
-    final Color surfaceColor = isDarkMode ? AppColors.darkSurface : AppColors.lightSurface;
-    final Color borderColor = isDarkMode ? AppColors.darkCardBorder : AppColors.lightCardBorder;
-    final Color textColor = isDarkMode ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final Color secondaryColor = isDarkMode ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final Color bgColor = isDarkMode
+        ? AppColors.darkBackground
+        : AppColors.lightBackground;
+    final Color surfaceColor = isDarkMode
+        ? AppColors.darkSurface
+        : AppColors.lightSurface;
+    final Color borderColor = isDarkMode
+        ? AppColors.darkCardBorder
+        : AppColors.lightCardBorder;
+    final Color textColor = isDarkMode
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final Color secondaryColor = isDarkMode
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
 
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: AppBar(
-        title: const Text('Products'),
-      ),
+      appBar: AppBar(title: const Text('Products')),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(
@@ -57,7 +66,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     (filter) => Container(
                       margin: const EdgeInsets.only(right: 8),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: surfaceColor,
                         borderRadius: BorderRadius.circular(20),
@@ -68,10 +79,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         children: [
                           Text(
                             filter,
-                            style: TextStyle(
-                              color: textColor,
-                              fontSize: 12,
-                            ),
+                            style: TextStyle(color: textColor, fontSize: 12),
                           ),
                           const SizedBox(width: 6),
                           GestureDetector(
@@ -117,17 +125,24 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(
-                            width: 260,
-                            child: _buildFilterSidebar(
-                                surfaceColor, borderColor, textColor, secondaryColor)),
+                          width: 260,
+                          child: _buildFilterSidebar(
+                            surfaceColor,
+                            borderColor,
+                            textColor,
+                            secondaryColor,
+                          ),
+                        ),
                         const SizedBox(width: 28),
                         Expanded(
-                            child: _buildProductsGrid(
-                                isDesktop: true,
-                                surfaceColor: surfaceColor,
-                                borderColor: borderColor,
-                                textColor: textColor,
-                                secondaryColor: secondaryColor)),
+                          child: _buildProductsGrid(
+                            isDesktop: true,
+                            surfaceColor: surfaceColor,
+                            borderColor: borderColor,
+                            textColor: textColor,
+                            secondaryColor: secondaryColor,
+                          ),
+                        ),
                       ],
                     )
                   : Column(
@@ -143,16 +158,21 @@ class _ProductsScreenState extends State<ProductsScreen> {
                           ),
                           children: [
                             _buildFilterSidebar(
-                                surfaceColor, borderColor, textColor, secondaryColor)
+                              surfaceColor,
+                              borderColor,
+                              textColor,
+                              secondaryColor,
+                            ),
                           ],
                         ),
                         const SizedBox(height: 16),
                         _buildProductsGrid(
-                            isDesktop: false,
-                            surfaceColor: surfaceColor,
-                            borderColor: borderColor,
-                            textColor: textColor,
-                            secondaryColor: secondaryColor),
+                          isDesktop: false,
+                          surfaceColor: surfaceColor,
+                          borderColor: borderColor,
+                          textColor: textColor,
+                          secondaryColor: secondaryColor,
+                        ),
                       ],
                     ),
 
@@ -165,7 +185,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     foregroundColor: textColor,
                     side: BorderSide(color: borderColor),
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 32, vertical: 14),
+                      horizontal: 32,
+                      vertical: 14,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -224,10 +246,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 },
                 child: Text(
                   'Clear all',
-                  style: TextStyle(
-                    color: secondaryColor,
-                    fontSize: 11,
-                  ),
+                  style: TextStyle(color: secondaryColor, fontSize: 11),
                 ),
               ),
             ],
@@ -243,14 +262,34 @@ class _ProductsScreenState extends State<ProductsScreen> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          _buildFilterCheckbox('Audio & headphones', '14', _audioChecked, secondaryColor,
-              (v) => setState(() => _audioChecked = v!)),
-          _buildFilterCheckbox('Phones', '11', _phonesChecked, secondaryColor,
-              (v) => setState(() => _phonesChecked = v!)),
-          _buildFilterCheckbox('Computing', '8', _computingChecked, secondaryColor,
-              (v) => setState(() => _computingChecked = v!)),
-          _buildFilterCheckbox('Accessories', '5', _accessoriesChecked, secondaryColor,
-              (v) => setState(() => _accessoriesChecked = v!)),
+          _buildFilterCheckbox(
+            'Audio & headphones',
+            '14',
+            _audioChecked,
+            secondaryColor,
+            (v) => setState(() => _audioChecked = v!),
+          ),
+          _buildFilterCheckbox(
+            'Phones',
+            '11',
+            _phonesChecked,
+            secondaryColor,
+            (v) => setState(() => _phonesChecked = v!),
+          ),
+          _buildFilterCheckbox(
+            'Computing',
+            '8',
+            _computingChecked,
+            secondaryColor,
+            (v) => setState(() => _computingChecked = v!),
+          ),
+          _buildFilterCheckbox(
+            'Accessories',
+            '5',
+            _accessoriesChecked,
+            secondaryColor,
+            (v) => setState(() => _accessoriesChecked = v!),
+          ),
 
           const SizedBox(height: 16),
 
@@ -263,12 +302,27 @@ class _ProductsScreenState extends State<ProductsScreen> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          _buildFilterCheckbox('Under 2 km', '14', _under2km, secondaryColor,
-              (v) => setState(() => _under2km = v!)),
-          _buildFilterCheckbox('Under 5 km', '11', _under5km, secondaryColor,
-              (v) => setState(() => _under5km = v!)),
-          _buildFilterCheckbox('Under 10 km', '8', _under10km, secondaryColor,
-              (v) => setState(() => _under10km = v!)),
+          _buildFilterCheckbox(
+            'Under 2 km',
+            '14',
+            _under2km,
+            secondaryColor,
+            (v) => setState(() => _under2km = v!),
+          ),
+          _buildFilterCheckbox(
+            'Under 5 km',
+            '11',
+            _under5km,
+            secondaryColor,
+            (v) => setState(() => _under5km = v!),
+          ),
+          _buildFilterCheckbox(
+            'Under 10 km',
+            '8',
+            _under10km,
+            secondaryColor,
+            (v) => setState(() => _under10km = v!),
+          ),
 
           const SizedBox(height: 16),
 
@@ -281,10 +335,20 @@ class _ProductsScreenState extends State<ProductsScreen> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          _buildFilterCheckbox('Price provided', '14', _priceProvided, secondaryColor,
-              (v) => setState(() => _priceProvided = v!)),
-          _buildFilterCheckbox('Recently updated', '11', _recentlyUpdated, secondaryColor,
-              (v) => setState(() => _recentlyUpdated = v!)),
+          _buildFilterCheckbox(
+            'Price provided',
+            '14',
+            _priceProvided,
+            secondaryColor,
+            (v) => setState(() => _priceProvided = v!),
+          ),
+          _buildFilterCheckbox(
+            'Recently updated',
+            '11',
+            _recentlyUpdated,
+            secondaryColor,
+            (v) => setState(() => _recentlyUpdated = v!),
+          ),
 
           const SizedBox(height: 20),
 
@@ -342,10 +406,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
           Expanded(
             child: Text(
               label,
-              style: TextStyle(
-                color: secondaryColor,
-                fontSize: 12,
-              ),
+              style: TextStyle(color: secondaryColor, fontSize: 12),
             ),
           ),
           Text(
@@ -380,7 +441,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
       itemBuilder: (context, index) {
         final product = Product.mockProducts[index];
         return _buildProductCardItem(
-            context, product, surfaceColor, borderColor, textColor, secondaryColor);
+          context,
+          product,
+          surfaceColor,
+          borderColor,
+          textColor,
+          secondaryColor,
+        );
       },
     );
   }
@@ -414,8 +481,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
               child: Stack(
                 children: [
                   ClipRRect(
-                    borderRadius:
-                        const BorderRadius.vertical(top: Radius.circular(16)),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(16),
+                    ),
                     child: Image.network(
                       product.imageUrl,
                       width: double.infinity,
@@ -430,7 +498,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       left: 8,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(12),
@@ -472,10 +542,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 children: [
                   Text(
                     product.category,
-                    style: TextStyle(
-                      color: secondaryColor,
-                      fontSize: 11,
-                    ),
+                    style: TextStyle(color: secondaryColor, fontSize: 11),
                   ),
                   const SizedBox(height: 2),
                   Text(

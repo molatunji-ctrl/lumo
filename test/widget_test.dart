@@ -1,23 +1,24 @@
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lumo/app.dart';
 
 void main() {
-  testWidgets('Lumo displays splash screen and opens home',
-          (WidgetTester tester) async {
-        // Start the real application.
-        await tester.pumpWidget(const LumoApp());
+  testWidgets('Lumo displays splash screen and navigates to home', (
+    WidgetTester tester,
+  ) async {
+    // Launch the real Lumo application.
+    await tester.pumpWidget(const LumoApp());
 
-        // The splash screen should appear first.
-        expect(find.text('lumo'), findsOneWidget);
+    // Confirm that the splash screen appears first.
+    expect(find.text('lumo'), findsOneWidget);
 
-        // Allow the splash screen's two-second navigation delay to finish.
-        // Do not use pumpAndSettle here because the splash animation repeats.
-        await tester.pump(const Duration(seconds: 2));
-        await tester.pump();
+    // Advance past the splash screen's two-second delay.
+    // Avoid pumpAndSettle because the splash animation repeats.
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pump();
 
-        // The home screen should now be visible.
-        expect(find.text('Products to discover'), findsOneWidget);
-        expect(find.text('Local shops to discover'), findsOneWidget);
-      });
+    // Verify headings from the redesigned home screen.
+    expect(find.text('Popular near Ikeja'), findsOneWidget);
+    expect(find.text('Shops worth a visit'), findsOneWidget);
+    expect(find.text('Markets to explore'), findsOneWidget);
+  });
 }

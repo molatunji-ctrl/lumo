@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/routing/app_router.dart';
 
 class HomeSearchBar extends StatelessWidget {
   final VoidCallback? onTap;
 
-  const HomeSearchBar({
-    super.key,
-    this.onTap,
-  });
+  const HomeSearchBar({super.key, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap ??
+      onTap:
+          onTap ??
           () {
             Navigator.pushNamed(context, AppRouter.search);
           },
@@ -39,10 +38,7 @@ class HomeSearchBar extends StatelessWidget {
             Expanded(
               child: Text(
                 'Search shops, markets, products...',
-                style: TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 14,
-                ),
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
               ),
             ),
             Icon(Icons.tune, color: AppColors.orange, size: 20),

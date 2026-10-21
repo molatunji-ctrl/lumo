@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../models/shop.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/routing/app_router.dart';
@@ -7,11 +8,7 @@ class FeaturedShops extends StatelessWidget {
   final List<Shop> shops;
   final VoidCallback? onSeeAllTap;
 
-  const FeaturedShops({
-    super.key,
-    required this.shops,
-    this.onSeeAllTap,
-  });
+  const FeaturedShops({super.key, required this.shops, this.onSeeAllTap});
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +16,18 @@ class FeaturedShops extends StatelessWidget {
     final bool isDesktop = width > 800;
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    final Color textColor = isDarkMode ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final Color surfaceColor = isDarkMode ? AppColors.darkSurface : AppColors.lightSurface;
-    final Color borderColor = isDarkMode ? AppColors.darkCardBorder : AppColors.lightCardBorder;
-    final Color secondaryColor = isDarkMode ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final Color textColor = isDarkMode
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final Color surfaceColor = isDarkMode
+        ? AppColors.darkSurface
+        : AppColors.lightSurface;
+    final Color borderColor = isDarkMode
+        ? AppColors.darkCardBorder
+        : AppColors.lightCardBorder;
+    final Color secondaryColor = isDarkMode
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
 
     return Padding(
       padding: EdgeInsets.symmetric(
@@ -33,7 +38,7 @@ class FeaturedShops extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'NEAR YOU',
+            'LOCAL SHOPS',
             style: TextStyle(
               color: AppColors.orange,
               fontSize: 11,
@@ -54,7 +59,8 @@ class FeaturedShops extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTap: onSeeAllTap ??
+                onTap:
+                    onSeeAllTap ??
                     () {
                       Navigator.pushNamed(context, AppRouter.nearby);
                     },
@@ -89,7 +95,16 @@ class FeaturedShops extends StatelessWidget {
                       child: Column(
                         children: shops
                             .take(2)
-                            .map((shop) => _buildShopRowCard(context, shop, surfaceColor, borderColor, textColor, secondaryColor))
+                            .map(
+                              (shop) => _buildShopRowCard(
+                                context,
+                                shop,
+                                surfaceColor,
+                                borderColor,
+                                textColor,
+                                secondaryColor,
+                              ),
+                            )
                             .toList(),
                       ),
                     ),
@@ -104,7 +119,16 @@ class FeaturedShops extends StatelessWidget {
                   children: [
                     ...shops
                         .take(2)
-                        .map((shop) => _buildShopRowCard(context, shop, surfaceColor, borderColor, textColor, secondaryColor)),
+                        .map(
+                          (shop) => _buildShopRowCard(
+                            context,
+                            shop,
+                            surfaceColor,
+                            borderColor,
+                            textColor,
+                            secondaryColor,
+                          ),
+                        ),
                     const SizedBox(height: 16),
                     _buildInteractiveMapCard(context, isDarkMode),
                   ],
@@ -124,11 +148,7 @@ class FeaturedShops extends StatelessWidget {
   ) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(
-          context,
-          AppRouter.shopDetails,
-          arguments: shop,
-        );
+        Navigator.pushNamed(context, AppRouter.shopDetails, arguments: shop);
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
@@ -169,7 +189,9 @@ class FeaturedShops extends StatelessWidget {
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 2),
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.green.withOpacity(0.12),
                           borderRadius: BorderRadius.circular(6),
@@ -177,7 +199,11 @@ class FeaturedShops extends StatelessWidget {
                         child: const Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.verified, color: AppColors.green, size: 12),
+                            Icon(
+                              Icons.verified,
+                              color: AppColors.green,
+                              size: 12,
+                            ),
                             SizedBox(width: 3),
                             Text(
                               'Verified',
@@ -195,16 +221,16 @@ class FeaturedShops extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     shop.category,
-                    style: TextStyle(
-                      color: secondaryColor,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: secondaryColor, fontSize: 12),
                   ),
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.location_on_outlined,
-                          size: 13, color: AppColors.orange),
+                      const Icon(
+                        Icons.location_on_outlined,
+                        size: 13,
+                        color: AppColors.orange,
+                      ),
                       const SizedBox(width: 3),
                       Expanded(
                         child: Text(
@@ -242,8 +268,11 @@ class FeaturedShops extends StatelessWidget {
                             ),
                           ),
                           SizedBox(width: 4),
-                          Icon(Icons.arrow_forward_rounded,
-                              size: 14, color: AppColors.orange),
+                          Icon(
+                            Icons.arrow_forward_rounded,
+                            size: 14,
+                            color: AppColors.orange,
+                          ),
                         ],
                       ),
                     ],
@@ -264,7 +293,9 @@ class FeaturedShops extends StatelessWidget {
         color: isDarkMode ? AppColors.darkSurface : AppColors.lightSurface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDarkMode ? AppColors.darkCardBorder : AppColors.lightCardBorder,
+          color: isDarkMode
+              ? AppColors.darkCardBorder
+              : AppColors.lightCardBorder,
         ),
       ),
       child: Stack(
@@ -274,7 +305,9 @@ class FeaturedShops extends StatelessWidget {
             width: double.infinity,
             height: double.infinity,
             decoration: BoxDecoration(
-              color: isDarkMode ? const Color(0xFF131D2E) : const Color(0xFFE5EDE6),
+              color: isDarkMode
+                  ? const Color(0xFF131D2E)
+                  : const Color(0xFFE5EDE6),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Center(
@@ -309,7 +342,11 @@ class FeaturedShops extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: const Icon(Icons.storefront, color: Colors.white, size: 20),
+                    child: const Icon(
+                      Icons.storefront,
+                      color: Colors.white,
+                      size: 20,
+                    ),
                   ),
                 ],
               ),
@@ -324,10 +361,14 @@ class FeaturedShops extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: isDarkMode ? AppColors.darkSurface.withOpacity(0.95) : Colors.white.withOpacity(0.95),
+                color: isDarkMode
+                    ? AppColors.darkSurface.withOpacity(0.95)
+                    : Colors.white.withOpacity(0.95),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: isDarkMode ? AppColors.darkCardBorder : AppColors.lightCardBorder,
+                  color: isDarkMode
+                      ? AppColors.darkCardBorder
+                      : AppColors.lightCardBorder,
                 ),
                 boxShadow: [
                   BoxShadow(
@@ -346,7 +387,9 @@ class FeaturedShops extends StatelessWidget {
                       Text(
                         'Explore Ikeja',
                         style: TextStyle(
-                          color: isDarkMode ? Colors.white : AppColors.lightTextPrimary,
+                          color: isDarkMode
+                              ? Colors.white
+                              : AppColors.lightTextPrimary,
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
@@ -367,7 +410,10 @@ class FeaturedShops extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
                     ),
                     onPressed: () {
                       Navigator.pushNamed(context, AppRouter.nearby);
@@ -384,7 +430,11 @@ class FeaturedShops extends StatelessWidget {
                           ),
                         ),
                         SizedBox(width: 4),
-                        Icon(Icons.arrow_forward_rounded, size: 14, color: Colors.white),
+                        Icon(
+                          Icons.arrow_forward_rounded,
+                          size: 14,
+                          color: Colors.white,
+                        ),
                       ],
                     ),
                   ),

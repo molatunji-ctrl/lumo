@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../core/theme/app_colors.dart';
 import '../../models/market.dart';
 import '../../widgets/app_bottom_navigation.dart';
@@ -37,17 +38,16 @@ class MarketsScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ClipRRect(
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(16)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(16),
+                  ),
                   child: Image.network(
                     market.imageUrl,
                     height: 150,
                     width: double.infinity,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      height: 150,
-                      color: AppColors.navy,
-                    ),
+                    errorBuilder: (context, error, stackTrace) =>
+                        Container(height: 150, color: AppColors.navy),
                   ),
                 ),
                 Padding(
@@ -68,8 +68,11 @@ class MarketsScreen extends StatelessWidget {
                           ),
                           Row(
                             children: [
-                              const Icon(Icons.star,
-                                  color: Colors.amber, size: 16),
+                              const Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                                size: 16,
+                              ),
                               const SizedBox(width: 4),
                               Text(
                                 market.rating.toString(),
@@ -118,10 +121,14 @@ class MarketsScreen extends StatelessWidget {
         currentIndex: 2,
         onTap: (index) {
           if (index == 2) return;
-          if (index == 0) Navigator.pushReplacementNamed(context, AppRouter.home);
-          if (index == 1) Navigator.pushReplacementNamed(context, AppRouter.search);
-          if (index == 3) Navigator.pushReplacementNamed(context, AppRouter.favourites);
-          if (index == 4) Navigator.pushReplacementNamed(context, AppRouter.account);
+          if (index == 0)
+            Navigator.pushReplacementNamed(context, AppRouter.home);
+          if (index == 1)
+            Navigator.pushReplacementNamed(context, AppRouter.search);
+          if (index == 3)
+            Navigator.pushReplacementNamed(context, AppRouter.favourites);
+          if (index == 4)
+            Navigator.pushReplacementNamed(context, AppRouter.account);
         },
       ),
     );

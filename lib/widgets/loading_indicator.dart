@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../core/theme/app_colors.dart';
 
 class LoadingIndicator extends StatelessWidget {
@@ -29,7 +30,7 @@ class ConnectingLoader extends StatelessWidget {
 
   const ConnectingLoader({
     super.key,
-    this.message = 'Connecting To TradeSphere...',
+    this.message = 'Connecting To Lumo...',
   });
 
   @override
@@ -38,24 +39,16 @@ class ConnectingLoader extends StatelessWidget {
       backgroundColor: AppColors.darkBackground,
       body: Center(
         child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 27,
-            vertical: 20,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 27, vertical: 20),
           decoration: BoxDecoration(
             color: AppColors.darkSurface,
-            border: Border.all(
-              color: AppColors.darkCardBorder,
-            ),
+            border: Border.all(color: AppColors.darkCardBorder),
             borderRadius: BorderRadius.circular(19),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const LoadingIndicator(
-                size: 24,
-                color: AppColors.green,
-              ),
+              const LoadingIndicator(size: 24, color: AppColors.green),
               const SizedBox(width: 16),
               Flexible(
                 child: Text(

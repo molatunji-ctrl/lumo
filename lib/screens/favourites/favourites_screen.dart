@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../core/theme/app_colors.dart';
 import '../../models/product.dart';
 import '../../widgets/app_bottom_navigation.dart';
@@ -9,8 +10,9 @@ class FavouritesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Product> favourites =
-        Product.mockProducts.where((Product p) => p.isFavourite).toList();
+    final List<Product> favourites = Product.mockProducts
+        .where((Product p) => p.isFavourite)
+        .toList();
 
     return Scaffold(
       backgroundColor: AppColors.darkBackground,
@@ -68,7 +70,11 @@ class FavouritesScreen extends StatelessWidget {
                           height: 70,
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) =>
-                              Container(width: 70, height: 70, color: AppColors.darkBackground),
+                              Container(
+                                width: 70,
+                                height: 70,
+                                color: AppColors.darkBackground,
+                              ),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -113,10 +119,14 @@ class FavouritesScreen extends StatelessWidget {
         currentIndex: 3,
         onTap: (int index) {
           if (index == 3) return;
-          if (index == 0) Navigator.pushReplacementNamed(context, AppRouter.home);
-          if (index == 1) Navigator.pushReplacementNamed(context, AppRouter.search);
-          if (index == 2) Navigator.pushReplacementNamed(context, AppRouter.nearby);
-          if (index == 4) Navigator.pushReplacementNamed(context, AppRouter.account);
+          if (index == 0)
+            Navigator.pushReplacementNamed(context, AppRouter.home);
+          if (index == 1)
+            Navigator.pushReplacementNamed(context, AppRouter.search);
+          if (index == 2)
+            Navigator.pushReplacementNamed(context, AppRouter.nearby);
+          if (index == 4)
+            Navigator.pushReplacementNamed(context, AppRouter.account);
         },
       ),
     );

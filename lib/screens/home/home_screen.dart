@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../models/shop.dart';
 import '../../models/product.dart';
 import '../../models/market.dart';
@@ -48,11 +49,21 @@ class _HomeScreenState extends State<HomeScreen> {
     final bool isDesktop = width > 800;
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    final Color bgColor = isDarkMode ? AppColors.darkBackground : AppColors.lightBackground;
-    final Color textColor = isDarkMode ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final Color surfaceColor = isDarkMode ? AppColors.darkSurface : AppColors.lightSurface;
-    final Color borderColor = isDarkMode ? AppColors.darkCardBorder : AppColors.lightCardBorder;
-    final Color secondaryColor = isDarkMode ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final Color bgColor = isDarkMode
+        ? AppColors.darkBackground
+        : AppColors.lightBackground;
+    final Color textColor = isDarkMode
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final Color surfaceColor = isDarkMode
+        ? AppColors.darkSurface
+        : AppColors.lightSurface;
+    final Color borderColor = isDarkMode
+        ? AppColors.darkCardBorder
+        : AppColors.lightCardBorder;
+    final Color secondaryColor = isDarkMode
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -67,11 +78,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
               const SizedBox(height: 24),
 
-              // Section 1: DISCOVER -> Popular near Ikeja
+              // Section 1: DISCOVER -> Products to discover
               Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: isDesktop ? 48 : 20,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -89,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Popular near Ikeja',
+                          'Products to discover',
                           style: TextStyle(
                             color: textColor,
                             fontSize: 20,
@@ -141,9 +150,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   itemCount: 3,
                   itemBuilder: (context, index) {
-                    final product = Product.mockProducts[index % Product.mockProducts.length];
+                    final product = Product
+                        .mockProducts[index % Product.mockProducts.length];
                     return _buildPopularProductCard(
-                        context, product, surfaceColor, borderColor, textColor, secondaryColor);
+                      context,
+                      product,
+                      surfaceColor,
+                      borderColor,
+                      textColor,
+                      secondaryColor,
+                    );
                   },
                 ),
               ),
@@ -157,9 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
               // Section 3: Markets to explore
               Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: isDesktop ? 48 : 20,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -204,21 +218,47 @@ class _HomeScreenState extends State<HomeScreen> {
                         ? Row(
                             children: [
                               Expanded(
-                                  child: _buildMarketTile(
-                                      context, Market.mockMarkets[0], surfaceColor, borderColor, textColor, secondaryColor)),
+                                child: _buildMarketTile(
+                                  context,
+                                  Market.mockMarkets[0],
+                                  surfaceColor,
+                                  borderColor,
+                                  textColor,
+                                  secondaryColor,
+                                ),
+                              ),
                               const SizedBox(width: 16),
                               Expanded(
-                                  child: _buildMarketTile(
-                                      context, Market.mockMarkets[1], surfaceColor, borderColor, textColor, secondaryColor)),
+                                child: _buildMarketTile(
+                                  context,
+                                  Market.mockMarkets[1],
+                                  surfaceColor,
+                                  borderColor,
+                                  textColor,
+                                  secondaryColor,
+                                ),
+                              ),
                             ],
                           )
                         : Column(
                             children: [
                               _buildMarketTile(
-                                  context, Market.mockMarkets[0], surfaceColor, borderColor, textColor, secondaryColor),
+                                context,
+                                Market.mockMarkets[0],
+                                surfaceColor,
+                                borderColor,
+                                textColor,
+                                secondaryColor,
+                              ),
                               const SizedBox(height: 12),
                               _buildMarketTile(
-                                  context, Market.mockMarkets[1], surfaceColor, borderColor, textColor, secondaryColor),
+                                context,
+                                Market.mockMarkets[1],
+                                surfaceColor,
+                                borderColor,
+                                textColor,
+                                secondaryColor,
+                              ),
                             ],
                           ),
                   ],
@@ -266,8 +306,9 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Stack(
                 children: [
                   ClipRRect(
-                    borderRadius:
-                        const BorderRadius.vertical(top: Radius.circular(16)),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(16),
+                    ),
                     child: Image.network(
                       product.imageUrl,
                       width: double.infinity,
@@ -282,7 +323,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       left: 10,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(12),
@@ -324,10 +367,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Text(
                     product.category,
-                    style: TextStyle(
-                      color: secondaryColor,
-                      fontSize: 11,
-                    ),
+                    style: TextStyle(color: secondaryColor, fontSize: 11),
                   ),
                   const SizedBox(height: 2),
                   Text(
@@ -422,21 +462,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 2),
                   Text(
                     '${market.location} · ${market.description}',
-                    style: TextStyle(
-                      color: secondaryColor,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: secondaryColor, fontSize: 12),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
             ),
-            Icon(
-              Icons.arrow_forward_rounded,
-              color: textColor,
-              size: 18,
-            ),
+            Icon(Icons.arrow_forward_rounded, color: textColor, size: 18),
           ],
         ),
       ),

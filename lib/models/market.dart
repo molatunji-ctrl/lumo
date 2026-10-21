@@ -66,7 +66,8 @@ class Market {
       location: 'Port Waterfront',
       imageUrl: 'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf',
       shopCount: 35,
-      description: 'Fresh seafood, coastal crafts, and waterfront dining stalls.',
+      description:
+          'Fresh seafood, coastal crafts, and waterfront dining stalls.',
       rating: 4.9,
     ),
   ];

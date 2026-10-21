@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/routing/app_router.dart';
 
 class HeroSection extends StatefulWidget {
   final ValueChanged<String>? onSearchSubmitted;
 
-  const HeroSection({
-    super.key,
-    this.onSearchSubmitted,
-  });
+  const HeroSection({super.key, this.onSearchSubmitted});
 
   @override
   State<HeroSection> createState() => _HeroSectionState();
@@ -25,11 +23,7 @@ class _HeroSectionState extends State<HeroSection> {
 
   void _submitSearch([String? query]) {
     final searchTerm = query ?? _searchController.text;
-    Navigator.pushNamed(
-      context,
-      AppRouter.products,
-      arguments: searchTerm,
-    );
+    Navigator.pushNamed(context, AppRouter.products, arguments: searchTerm);
   }
 
   @override
@@ -38,12 +32,24 @@ class _HeroSectionState extends State<HeroSection> {
     final bool isDesktop = width > 800;
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    final Color bgColor = isDarkMode ? AppColors.darkBackground : AppColors.lightBackground;
-    final Color surfaceColor = isDarkMode ? AppColors.darkSurface : AppColors.lightSurface;
-    final Color borderColor = isDarkMode ? AppColors.darkCardBorder : AppColors.lightCardBorder;
-    final Color textColor = isDarkMode ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final Color secondaryColor = isDarkMode ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
-    final Color searchBgColor = isDarkMode ? AppColors.darkSurface : Colors.white;
+    final Color bgColor = isDarkMode
+        ? AppColors.darkBackground
+        : AppColors.lightBackground;
+    final Color surfaceColor = isDarkMode
+        ? AppColors.darkSurface
+        : AppColors.lightSurface;
+    final Color borderColor = isDarkMode
+        ? AppColors.darkCardBorder
+        : AppColors.lightCardBorder;
+    final Color textColor = isDarkMode
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final Color secondaryColor = isDarkMode
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
+    final Color searchBgColor = isDarkMode
+        ? AppColors.darkSurface
+        : Colors.white;
 
     return Container(
       width: double.infinity,
@@ -117,21 +123,16 @@ class _HeroSectionState extends State<HeroSection> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
           decoration: BoxDecoration(
-            color: isDarkMode ? const Color(0xFF241B1A) : const Color(0xFFFFF2EC),
+            color: isDarkMode
+                ? const Color(0xFF241B1A)
+                : const Color(0xFFFFF2EC),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: const Color(0x66FF8A3D),
-              width: 1,
-            ),
+            border: Border.all(color: const Color(0x66FF8A3D), width: 1),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
-                Icons.auto_awesome,
-                color: AppColors.orange,
-                size: 14,
-              ),
+              const Icon(Icons.auto_awesome, color: AppColors.orange, size: 14),
               const SizedBox(width: 6),
               Text(
                 "Discover what's around you",
@@ -186,11 +187,7 @@ class _HeroSectionState extends State<HeroSection> {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
           child: Row(
             children: [
-              Icon(
-                Icons.search_rounded,
-                color: secondaryColor,
-                size: 20,
-              ),
+              Icon(Icons.search_rounded, color: secondaryColor, size: 20),
               const SizedBox(width: 10),
               Expanded(
                 child: TextField(
@@ -251,10 +248,7 @@ class _HeroSectionState extends State<HeroSection> {
           children: [
             Text(
               'Popular:',
-              style: TextStyle(
-                color: secondaryColor,
-                fontSize: 13,
-              ),
+              style: TextStyle(color: secondaryColor, fontSize: 13),
             ),
             _buildPopularTag('iPhone 15', textColor),
             _buildPopularTag('Office chairs', textColor),
@@ -341,10 +335,7 @@ class _HeroSectionState extends State<HeroSection> {
                   ? const Color(0xFF131D2E).withValues(alpha: 0.92)
                   : Colors.white.withValues(alpha: 0.92),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: borderColor,
-                width: 1,
-              ),
+              border: Border.all(color: borderColor, width: 1),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.08),
@@ -364,7 +355,9 @@ class _HeroSectionState extends State<HeroSection> {
                 Text(
                   '8 min from you',
                   style: TextStyle(
-                    color: isDarkMode ? Colors.white : AppColors.lightTextPrimary,
+                    color: isDarkMode
+                        ? Colors.white
+                        : AppColors.lightTextPrimary,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
@@ -385,10 +378,7 @@ class _HeroSectionState extends State<HeroSection> {
                   ? AppColors.darkSurface.withValues(alpha: 0.95)
                   : Colors.white.withValues(alpha: 0.95),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: borderColor,
-                width: 1.2,
-              ),
+              border: Border.all(color: borderColor, width: 1.2),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.12),
@@ -430,7 +420,9 @@ class _HeroSectionState extends State<HeroSection> {
                     Text(
                       '12 electronics shops',
                       style: TextStyle(
-                        color: isDarkMode ? Colors.white : AppColors.lightTextPrimary,
+                        color: isDarkMode
+                            ? Colors.white
+                            : AppColors.lightTextPrimary,
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
                       ),
@@ -466,7 +458,12 @@ class StadiumCardClipper extends CustomClipper<Path> {
     path.lineTo(size.width - radius, 0);
     path.quadraticBezierTo(size.width, 0, size.width, radius);
     path.lineTo(size.width, size.height - radius);
-    path.quadraticBezierTo(size.width, size.height, size.width - radius, size.height);
+    path.quadraticBezierTo(
+      size.width,
+      size.height,
+      size.width - radius,
+      size.height,
+    );
     path.lineTo(radius, size.height);
     path.quadraticBezierTo(0, size.height, 0, size.height - radius);
     path.lineTo(0, radius);

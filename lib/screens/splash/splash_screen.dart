@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../core/theme/app_colors.dart';
 import '../../core/routing/app_router.dart';
 
@@ -26,12 +27,7 @@ class _SplashScreenState extends State<SplashScreen>
     _animation = Tween<double>(
       begin: 0,
       end: 135,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeInOut,
-      ),
-    );
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
     _navigateToNext();
   }

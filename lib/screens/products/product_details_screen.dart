@@ -1,31 +1,36 @@
 import 'package:flutter/material.dart';
+
 import '../../core/theme/app_colors.dart';
 import '../../models/product.dart';
 import '../../models/shop.dart';
 import '../../core/routing/app_router.dart';
 
 class ProductDetailsScreen extends StatelessWidget {
-
   final Product product;
 
-  const ProductDetailsScreen({
-    super.key,
-    required this.product,
-  });
-
+  const ProductDetailsScreen({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
-
     final double width = MediaQuery.of(context).size.width;
     final bool isDesktop = width > 800;
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    final Color bgColor = isDarkMode ? AppColors.darkBackground : AppColors.lightBackground;
-    final Color surfaceColor = isDarkMode ? AppColors.darkSurface : AppColors.lightSurface;
-    final Color borderColor = isDarkMode ? AppColors.darkCardBorder : AppColors.lightCardBorder;
-    final Color textColor = isDarkMode ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final Color secondaryColor = isDarkMode ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final Color bgColor = isDarkMode
+        ? AppColors.darkBackground
+        : AppColors.lightBackground;
+    final Color surfaceColor = isDarkMode
+        ? AppColors.darkSurface
+        : AppColors.lightSurface;
+    final Color borderColor = isDarkMode
+        ? AppColors.darkCardBorder
+        : AppColors.lightCardBorder;
+    final Color textColor = isDarkMode
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final Color secondaryColor = isDarkMode
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -53,10 +58,7 @@ class ProductDetailsScreen extends StatelessWidget {
               // Breadcrumbs
               Text(
                 'Discover / ${product.category} / ${product.name}',
-                style: TextStyle(
-                  color: secondaryColor,
-                  fontSize: 12,
-                ),
+                style: TextStyle(color: secondaryColor, fontSize: 12),
               ),
 
               const SizedBox(height: 16),
@@ -66,17 +68,45 @@ class ProductDetailsScreen extends StatelessWidget {
                   ? Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(flex: 5, child: _buildProductImage(product, isDesktop, surfaceColor, borderColor)),
+                        Expanded(
+                          flex: 5,
+                          child: _buildProductImage(
+                            product,
+                            isDesktop,
+                            surfaceColor,
+                            borderColor,
+                          ),
+                        ),
                         const SizedBox(width: 32),
-                        Expanded(flex: 5, child: _buildProductDetails(product, textColor, secondaryColor, surfaceColor, borderColor)),
+                        Expanded(
+                          flex: 5,
+                          child: _buildProductDetails(
+                            product,
+                            textColor,
+                            secondaryColor,
+                            surfaceColor,
+                            borderColor,
+                          ),
+                        ),
                       ],
                     )
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildProductImage(product, isDesktop, surfaceColor, borderColor),
+                        _buildProductImage(
+                          product,
+                          isDesktop,
+                          surfaceColor,
+                          borderColor,
+                        ),
                         const SizedBox(height: 20),
-                        _buildProductDetails(product, textColor, secondaryColor, surfaceColor, borderColor),
+                        _buildProductDetails(
+                          product,
+                          textColor,
+                          secondaryColor,
+                          surfaceColor,
+                          borderColor,
+                        ),
                       ],
                     ),
 
@@ -94,7 +124,13 @@ class ProductDetailsScreen extends StatelessWidget {
 
               const SizedBox(height: 12),
 
-              _buildLocalShopCard(context, surfaceColor, borderColor, textColor, secondaryColor),
+              _buildLocalShopCard(
+                context,
+                surfaceColor,
+                borderColor,
+                textColor,
+                secondaryColor,
+              ),
 
               const SizedBox(height: 32),
 
@@ -122,8 +158,16 @@ class ProductDetailsScreen extends StatelessWidget {
                 ),
                 itemCount: 4,
                 itemBuilder: (context, index) {
-                  final p = Product.mockProducts[index % Product.mockProducts.length];
-                  return _buildKeepExploringCard(context, p, surfaceColor, borderColor, textColor, secondaryColor);
+                  final p =
+                      Product.mockProducts[index % Product.mockProducts.length];
+                  return _buildKeepExploringCard(
+                    context,
+                    p,
+                    surfaceColor,
+                    borderColor,
+                    textColor,
+                    secondaryColor,
+                  );
                 },
               ),
 
@@ -135,7 +179,12 @@ class ProductDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProductImage(Product product, bool isDesktop, Color surfaceColor, Color borderColor) {
+  Widget _buildProductImage(
+    Product product,
+    bool isDesktop,
+    Color surfaceColor,
+    Color borderColor,
+  ) {
     return Container(
       height: isDesktop ? 340 : 250,
       width: double.infinity,
@@ -195,19 +244,12 @@ class ProductDetailsScreen extends StatelessWidget {
         ),
         const Text(
           'Availability not confirmed',
-          style: TextStyle(
-            color: AppColors.lightTextMuted,
-            fontSize: 11,
-          ),
+          style: TextStyle(color: AppColors.lightTextMuted, fontSize: 11),
         ),
         const SizedBox(height: 16),
         Text(
           product.description,
-          style: TextStyle(
-            color: secondaryColor,
-            fontSize: 13,
-            height: 1.5,
-          ),
+          style: TextStyle(color: secondaryColor, fontSize: 13, height: 1.5),
         ),
         const SizedBox(height: 20),
         ElevatedButton(
@@ -273,11 +315,7 @@ class ProductDetailsScreen extends StatelessWidget {
     final shop = Shop.mockShops.first;
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(
-          context,
-          AppRouter.shopDetails,
-          arguments: shop,
-        );
+        Navigator.pushNamed(context, AppRouter.shopDetails, arguments: shop);
       },
       child: Container(
         padding: const EdgeInsets.all(14),
@@ -315,10 +353,7 @@ class ProductDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     '${shop.category} · Ikeja',
-                    style: TextStyle(
-                      color: secondaryColor,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: secondaryColor, fontSize: 12),
                   ),
                   const SizedBox(height: 2),
                   const Text(
@@ -356,11 +391,7 @@ class ProductDetailsScreen extends StatelessWidget {
   ) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(
-          context,
-          AppRouter.productDetails,
-          arguments: p,
-        );
+        Navigator.pushNamed(context, AppRouter.productDetails, arguments: p);
       },
       child: Container(
         decoration: BoxDecoration(
@@ -373,8 +404,9 @@ class ProductDetailsScreen extends StatelessWidget {
           children: [
             Expanded(
               child: ClipRRect(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(12)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(12),
+                ),
                 child: Image.network(
                   p.imageUrl,
                   width: double.infinity,
@@ -411,10 +443,7 @@ class ProductDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     p.displayPrice,
-                    style: TextStyle(
-                      color: secondaryColor,
-                      fontSize: 11,
-                    ),
+                    style: TextStyle(color: secondaryColor, fontSize: 11),
                   ),
                 ],
               ),

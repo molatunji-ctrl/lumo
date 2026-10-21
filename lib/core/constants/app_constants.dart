@@ -1,6 +1,7 @@
 class AppConstants {
   static const String appName = 'Lumo';
-  static const String appTagline = 'Discover markets, shops, and products near you.';
+  static const String appTagline =
+      'Discover markets, shops, and products near you.';
 
   // Default Spacing & Padding
   static const double defaultPadding = 16.0;

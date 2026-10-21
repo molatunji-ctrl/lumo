@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../core/theme/app_colors.dart';
 import '../../models/shop.dart';
 import '../../widgets/app_bottom_navigation.dart';
@@ -67,13 +68,25 @@ class _NearbyShopsScreenState extends State<NearbyShopsScreen> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        _buildFilterTab('Browse this area', isSelected: _activeTab == 'Browse this area'),
+                        _buildFilterTab(
+                          'Browse this area',
+                          isSelected: _activeTab == 'Browse this area',
+                        ),
                         const SizedBox(width: 8),
-                        _buildFilterTab('All places', isSelected: _activeTab == 'All places'),
+                        _buildFilterTab(
+                          'All places',
+                          isSelected: _activeTab == 'All places',
+                        ),
                         const SizedBox(width: 8),
-                        _buildFilterTab('Shops', isSelected: _activeTab == 'Shops'),
+                        _buildFilterTab(
+                          'Shops',
+                          isSelected: _activeTab == 'Shops',
+                        ),
                         const SizedBox(width: 8),
-                        _buildFilterTab('Markets', isSelected: _activeTab == 'Markets'),
+                        _buildFilterTab(
+                          'Markets',
+                          isSelected: _activeTab == 'Markets',
+                        ),
                       ],
                     ),
                   ),
@@ -85,14 +98,17 @@ class _NearbyShopsScreenState extends State<NearbyShopsScreen> {
                       ? Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Expanded(flex: 5, child: _buildShopListSection(context)),
+                            Expanded(
+                              flex: 5,
+                              child: _buildShopListSection(context),
+                            ),
                             const SizedBox(width: 24),
                             Expanded(flex: 7, child: _buildMapPreviewSection()),
                           ],
                         )
                       : (_isMapView
-                          ? _buildMapPreviewSection(height: 500)
-                          : _buildShopListSection(context)),
+                            ? _buildMapPreviewSection(height: 500)
+                            : _buildShopListSection(context)),
 
                   const SizedBox(height: 20),
 
@@ -127,11 +143,17 @@ class _NearbyShopsScreenState extends State<NearbyShopsScreen> {
                     });
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.navy,
                       borderRadius: BorderRadius.circular(30),
-                      border: Border.all(color: AppColors.cardBorder, width: 1.5),
+                      border: Border.all(
+                        color: AppColors.cardBorder,
+                        width: 1.5,
+                      ),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.4),
@@ -144,7 +166,9 @@ class _NearbyShopsScreenState extends State<NearbyShopsScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          _isMapView ? Icons.format_list_bulleted_rounded : Icons.map_rounded,
+                          _isMapView
+                              ? Icons.format_list_bulleted_rounded
+                              : Icons.map_rounded,
                           color: Colors.white,
                           size: 18,
                         ),
@@ -169,10 +193,14 @@ class _NearbyShopsScreenState extends State<NearbyShopsScreen> {
         currentIndex: 2,
         onTap: (index) {
           if (index == 2) return;
-          if (index == 0) Navigator.pushReplacementNamed(context, AppRouter.home);
-          if (index == 1) Navigator.pushReplacementNamed(context, AppRouter.search);
-          if (index == 3) Navigator.pushReplacementNamed(context, AppRouter.favourites);
-          if (index == 4) Navigator.pushReplacementNamed(context, AppRouter.account);
+          if (index == 0)
+            Navigator.pushReplacementNamed(context, AppRouter.home);
+          if (index == 1)
+            Navigator.pushReplacementNamed(context, AppRouter.search);
+          if (index == 3)
+            Navigator.pushReplacementNamed(context, AppRouter.favourites);
+          if (index == 4)
+            Navigator.pushReplacementNamed(context, AppRouter.account);
         },
       ),
     );
@@ -244,11 +272,7 @@ class _NearbyShopsScreenState extends State<NearbyShopsScreen> {
   }) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(
-          context,
-          AppRouter.shopDetails,
-          arguments: shop,
-        );
+        Navigator.pushNamed(context, AppRouter.shopDetails, arguments: shop);
       },
       child: Container(
         padding: const EdgeInsets.all(14),
@@ -291,10 +315,7 @@ class _NearbyShopsScreenState extends State<NearbyShopsScreen> {
             const SizedBox(height: 2),
             const Text(
               'Sample shop · Identity unverified',
-              style: TextStyle(
-                color: AppColors.textMuted,
-                fontSize: 11,
-              ),
+              style: TextStyle(color: AppColors.textMuted, fontSize: 11),
             ),
             const SizedBox(height: 8),
             const Text(
@@ -347,7 +368,9 @@ class _NearbyShopsScreenState extends State<NearbyShopsScreen> {
                           top: 100,
                           child: Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 6),
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
                             decoration: BoxDecoration(
                               color: AppColors.darkBackground,
                               borderRadius: BorderRadius.circular(20),
@@ -356,8 +379,11 @@ class _NearbyShopsScreenState extends State<NearbyShopsScreen> {
                             child: const Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.location_on,
-                                    color: AppColors.orange, size: 14),
+                                Icon(
+                                  Icons.location_on,
+                                  color: AppColors.orange,
+                                  size: 14,
+                                ),
                                 SizedBox(width: 4),
                                 Text(
                                   'Kora Collective',
@@ -417,10 +443,7 @@ class _NearbyShopsScreenState extends State<NearbyShopsScreen> {
                 SizedBox(height: 2),
                 Text(
                   'Not a navigable map. Browse the place list instead. User maps and location placeholders will be connected during development.',
-                  style: TextStyle(
-                    color: AppColors.textMuted,
-                    fontSize: 11,
-                  ),
+                  style: TextStyle(color: AppColors.textMuted, fontSize: 11),
                 ),
               ],
             ),

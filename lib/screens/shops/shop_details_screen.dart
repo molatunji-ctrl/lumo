@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../core/theme/app_colors.dart';
 import '../../models/shop.dart';
 import '../../models/product.dart';
@@ -20,10 +21,7 @@ class ShopDetailsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(activeShop.name),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.share_outlined),
-            onPressed: () {},
-          ),
+          IconButton(icon: const Icon(Icons.share_outlined), onPressed: () {}),
         ],
       ),
       body: SingleChildScrollView(
@@ -97,7 +95,9 @@ class ShopDetailsScreen extends StatelessWidget {
                         const SizedBox(height: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.surface,
                             borderRadius: BorderRadius.circular(12),
@@ -121,7 +121,9 @@ class ShopDetailsScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                     ),
                     onPressed: () {},
                     child: const Text(
@@ -165,9 +167,7 @@ class ShopDetailsScreen extends StatelessWidget {
 
             // Section: Explore the sample collection
             Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: isDesktop ? 48 : 20,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 20),
               child: const Text(
                 'Explore the sample collection',
                 style: TextStyle(
@@ -182,9 +182,7 @@ class ShopDetailsScreen extends StatelessWidget {
 
             // Collection Product Grid
             Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: isDesktop ? 48 : 20,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 20),
               child: GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -196,8 +194,8 @@ class ShopDetailsScreen extends StatelessWidget {
                 ),
                 itemCount: 4,
                 itemBuilder: (context, index) {
-                  final product = Product.mockProducts[
-                      index % Product.mockProducts.length];
+                  final product =
+                      Product.mockProducts[index % Product.mockProducts.length];
                   return _buildCollectionProductCard(context, product);
                 },
               ),
@@ -321,8 +319,9 @@ class ShopDetailsScreen extends StatelessWidget {
           children: [
             Expanded(
               child: ClipRRect(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(12)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(12),
+                ),
                 child: Image.network(
                   product.imageUrl,
                   width: double.infinity,
