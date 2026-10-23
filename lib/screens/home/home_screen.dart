@@ -18,8 +18,27 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
   int _currentIndex = 0;
+
+  // Controller to handle the smooth handoff from the Splash Screen
+  late final AnimationController _staggerController;
+
+  @override
+  void initState() {
+    super.initState();
+    // Start the cascade animation exactly as the splash screen transitions
+    _staggerController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    )..forward();
+  }
+
+  @override
+  void dispose() {
+    _staggerController.dispose();
+    super.dispose();
+  }
 
   void _onBottomNavTapped(int index) {
     if (index == _currentIndex) return;
@@ -72,196 +91,224 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const HomeHeader(),
-              const HeroSection(),
-              const CategoryList(),
+              _FadeSlide(
+                controller: _staggerController,
+                delay: 0.1,
+                child: const HomeHeader(),
+              ),
+              _FadeSlide(
+                controller: _staggerController,
+                delay: 0.2,
+                child: const HeroSection(),
+              ),
+              _FadeSlide(
+                controller: _staggerController,
+                delay: 0.3,
+                child: const CategoryList(),
+              ),
 
               const SizedBox(height: 24),
 
               // Section 1: DISCOVER -> Products to discover
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'DISCOVER',
-                      style: TextStyle(
-                        color: AppColors.orange,
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
+              _FadeSlide(
+                controller: _staggerController,
+                delay: 0.4,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'DISCOVER',
+                        style: TextStyle(
+                          color: AppColors.orange,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Products to discover',
-                          style: TextStyle(
-                            color: textColor,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Products to discover',
+                            style: TextStyle(
+                              color: textColor,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(context, AppRouter.products);
-                          },
-                          child: Row(
-                            children: [
-                              Text(
-                                'See all products',
-                                style: TextStyle(
-                                  color: secondaryColor,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, AppRouter.products);
+                            },
+                            child: Row(
+                              children: [
+                                Text(
+                                  'See all products',
+                                  style: TextStyle(
+                                    color: secondaryColor,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(width: 4),
-                              Icon(
-                                Icons.arrow_forward_rounded,
-                                size: 14,
-                                color: secondaryColor,
-                              ),
-                            ],
+                                const SizedBox(width: 4),
+                                Icon(
+                                  Icons.arrow_forward_rounded,
+                                  size: 14,
+                                  color: secondaryColor,
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
 
               const SizedBox(height: 16),
 
               // Popular Products Grid
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 20),
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: isDesktop ? 3 : (width > 500 ? 2 : 1),
-                    childAspectRatio: isDesktop ? 0.9 : 0.82,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
+              _FadeSlide(
+                controller: _staggerController,
+                delay: 0.5,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 20),
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: isDesktop ? 3 : (width > 500 ? 2 : 1),
+                      childAspectRatio: isDesktop ? 0.9 : 0.82,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                    ),
+                    itemCount: 3,
+                    itemBuilder: (context, index) {
+                      final product = Product
+                          .mockProducts[index % Product.mockProducts.length];
+                      return _buildPopularProductCard(
+                        context,
+                        product,
+                        surfaceColor,
+                        borderColor,
+                        textColor,
+                        secondaryColor,
+                      );
+                    },
                   ),
-                  itemCount: 3,
-                  itemBuilder: (context, index) {
-                    final product = Product
-                        .mockProducts[index % Product.mockProducts.length];
-                    return _buildPopularProductCard(
-                      context,
-                      product,
-                      surfaceColor,
-                      borderColor,
-                      textColor,
-                      secondaryColor,
-                    );
-                  },
                 ),
               ),
 
               const SizedBox(height: 32),
 
               // Section 2: NEAR YOU -> Shops worth a visit
-              FeaturedShops(shops: Shop.mockShops),
+              _FadeSlide(
+                controller: _staggerController,
+                delay: 0.6,
+                child: FeaturedShops(shops: Shop.mockShops),
+              ),
 
               const SizedBox(height: 32),
 
               // Section 3: Markets to explore
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Markets to explore',
-                          style: TextStyle(
-                            color: textColor,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+              _FadeSlide(
+                controller: _staggerController,
+                delay: 0.7,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Markets to explore',
+                            style: TextStyle(
+                              color: textColor,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(context, AppRouter.markets);
-                          },
-                          child: Row(
-                            children: [
-                              Text(
-                                'Explore markets',
-                                style: TextStyle(
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, AppRouter.markets);
+                            },
+                            child: Row(
+                              children: [
+                                Text(
+                                  'Explore markets',
+                                  style: TextStyle(
+                                    color: secondaryColor,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                Icon(
+                                  Icons.arrow_forward_rounded,
+                                  size: 14,
                                   color: secondaryColor,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
                                 ),
-                              ),
-                              const SizedBox(width: 4),
-                              Icon(
-                                Icons.arrow_forward_rounded,
-                                size: 14,
-                                color: secondaryColor,
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    isDesktop
-                        ? Row(
-                            children: [
-                              Expanded(
-                                child: _buildMarketTile(
-                                  context,
-                                  Market.mockMarkets[0],
-                                  surfaceColor,
-                                  borderColor,
-                                  textColor,
-                                  secondaryColor,
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: _buildMarketTile(
-                                  context,
-                                  Market.mockMarkets[1],
-                                  surfaceColor,
-                                  borderColor,
-                                  textColor,
-                                  secondaryColor,
-                                ),
-                              ),
-                            ],
-                          )
-                        : Column(
-                            children: [
-                              _buildMarketTile(
-                                context,
-                                Market.mockMarkets[0],
-                                surfaceColor,
-                                borderColor,
-                                textColor,
-                                secondaryColor,
-                              ),
-                              const SizedBox(height: 12),
-                              _buildMarketTile(
-                                context,
-                                Market.mockMarkets[1],
-                                surfaceColor,
-                                borderColor,
-                                textColor,
-                                secondaryColor,
-                              ),
-                            ],
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      isDesktop
+                          ? Row(
+                        children: [
+                          Expanded(
+                            child: _buildMarketTile(
+                              context,
+                              Market.mockMarkets[0],
+                              surfaceColor,
+                              borderColor,
+                              textColor,
+                              secondaryColor,
+                            ),
                           ),
-                  ],
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: _buildMarketTile(
+                              context,
+                              Market.mockMarkets[1],
+                              surfaceColor,
+                              borderColor,
+                              textColor,
+                              secondaryColor,
+                            ),
+                          ),
+                        ],
+                      )
+                          : Column(
+                        children: [
+                          _buildMarketTile(
+                            context,
+                            Market.mockMarkets[0],
+                            surfaceColor,
+                            borderColor,
+                            textColor,
+                            secondaryColor,
+                          ),
+                          const SizedBox(height: 12),
+                          _buildMarketTile(
+                            context,
+                            Market.mockMarkets[1],
+                            surfaceColor,
+                            borderColor,
+                            textColor,
+                            secondaryColor,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
 
@@ -270,21 +317,27 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: AppBottomNavigation(
-        currentIndex: _currentIndex,
-        onTap: _onBottomNavTapped,
+      bottomNavigationBar: FadeTransition(
+        opacity: CurvedAnimation(
+          parent: _staggerController,
+          curve: const Interval(0.8, 1.0, curve: Curves.easeIn),
+        ),
+        child: AppBottomNavigation(
+          currentIndex: _currentIndex,
+          onTap: _onBottomNavTapped,
+        ),
       ),
     );
   }
 
   Widget _buildPopularProductCard(
-    BuildContext context,
-    Product product,
-    Color surfaceColor,
-    Color borderColor,
-    Color textColor,
-    Color secondaryColor,
-  ) {
+      BuildContext context,
+      Product product,
+      Color surfaceColor,
+      Color borderColor,
+      Color textColor,
+      Color secondaryColor,
+      ) {
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(
@@ -415,13 +468,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildMarketTile(
-    BuildContext context,
-    Market market,
-    Color surfaceColor,
-    Color borderColor,
-    Color textColor,
-    Color secondaryColor,
-  ) {
+      BuildContext context,
+      Market market,
+      Color surfaceColor,
+      Color borderColor,
+      Color textColor,
+      Color secondaryColor,
+      ) {
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(context, AppRouter.markets);
@@ -473,6 +526,42 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+// --- MICRO-INTERACTION COMPONENT ---
+// Add this to the bottom of the file to handle the staggered slide-in effect
+class _FadeSlide extends StatelessWidget {
+  final AnimationController controller;
+  final double delay;
+  final Widget child;
+
+  const _FadeSlide({
+    required this.controller,
+    required this.delay,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final curve = CurvedAnimation(
+      parent: controller,
+      curve: Interval(delay, (delay + 0.4).clamp(0.0, 1.0), curve: Curves.easeOutCubic),
+    );
+
+    return AnimatedBuilder(
+      animation: curve,
+      builder: (context, child) {
+        return Opacity(
+          opacity: curve.value,
+          child: Transform.translate(
+            offset: Offset(0, 30 * (1 - curve.value)),
+            child: child,
+          ),
+        );
+      },
+      child: child,
     );
   }
 }
