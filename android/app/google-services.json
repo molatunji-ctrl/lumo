@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "629742261070",
+    "project_id": "keepr-co",
+    "storage_bucket": "keepr-co.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:629742261070:android:44f42c365ab88635bc041f",
+        "android_client_info": {
+          "package_name": "com.example.lumo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "629742261070-jr45cqkgc9ll751jdrtqioe3563vgavn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAjYiuWk-Y5gfioI-ie-MWFM_62qf8tjvY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "629742261070-jr45cqkgc9ll751jdrtqioe3563vgavn.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "629742261070-j0vno2mfkgsgaladf256gdni5o6eb2nr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.lumo"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
