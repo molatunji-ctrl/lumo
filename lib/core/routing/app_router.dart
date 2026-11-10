@@ -14,6 +14,7 @@ import '../../screens/nearby/nearby_shops_screen.dart';
 import '../../screens/favourites/favourites_screen.dart';
 import '../../screens/account/account_screen.dart';
 import '../../screens/products/seller_products_screen.dart';
+import '../../screens/admin/admin_dashboard_screen.dart';
 
 class AppRouter {
   AppRouter._();
@@ -29,6 +30,7 @@ class AppRouter {
   static const String favourites = '/favourites';
   static const String account = '/account';
   static const String sellerProducts = '/seller-products';
+  static const String adminDashboard = '/admin';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -117,6 +119,12 @@ class AppRouter {
         return MaterialPageRoute<void>(
           settings: settings,
           builder: (_) => const SellerProductsScreen(),
+        );
+
+      case adminDashboard:
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (_) => const AdminDashboardScreen(),
         );
 
       default:

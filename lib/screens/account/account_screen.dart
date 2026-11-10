@@ -128,6 +128,8 @@ class _AccountScreenState extends State<AccountScreen> {
   bool _obscurePassword = true;
   String? _errorMessage;
   String? _verificationId;
+  Future<IdTokenResult>? _adminClaimCheck;
+  String? _adminClaimCheckUid;
   String _phoneNumberE164 = '+234';
   Map<String, String> _copy = _defaultCopy;
   int? _resendToken;
@@ -656,6 +658,10 @@ class _AccountScreenState extends State<AccountScreen> {
     final String displayName = user.displayName?.trim().isNotEmpty == true
         ? user.displayName!.trim()
         : user.email ?? user.phoneNumber ?? _text('member');
+    if (_adminClaimCheckUid != user.uid) {
+      _adminClaimCheckUid = user.uid;
+      _adminClaimCheck = user.getIdTokenResult(true);
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -728,6 +734,41 @@ class _AccountScreenState extends State<AccountScreen> {
               borderRadius: BorderRadius.circular(14),
             ),
           ),
+        ),
+        FutureBuilder<IdTokenResult>(
+          future: _adminClaimCheck,
+          builder:
+              (BuildContext context, AsyncSnapshot<IdTokenResult> snapshot) {
+                if (snapshot.hasError) {
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      'Could not check admin access: ${snapshot.error}',
+                      style: TextStyle(color: AppColors.error),
+                    ),
+                  );
+                }
+                if (snapshot.data?.claims?['role'] != 'admin') {
+                  return const SizedBox.shrink();
+                }
+                return Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: OutlinedButton.icon(
+                    onPressed: () =>
+                        Navigator.pushNamed(context, AppRouter.adminDashboard),
+                    icon: const Icon(Icons.admin_panel_settings_outlined),
+                    label: const Text('Admin dashboard'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: foreground,
+                      side: BorderSide(color: border),
+                      minimumSize: const Size.fromHeight(48),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                  ),
+                );
+              },
         ),
         const SizedBox(height: 20),
         OutlinedButton(
