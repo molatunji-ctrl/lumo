@@ -15,7 +15,7 @@ class LocationService {
     }
     if (permission == LocationPermission.deniedForever) {
       throw StateError(
-        'Location permission is disabled for Lumo. Enable it in system settings.',
+        'Location permission is disabled for Keepr. Enable it in system settings.',
       );
     }
 

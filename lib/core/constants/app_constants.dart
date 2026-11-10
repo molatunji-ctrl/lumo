@@ -1,5 +1,5 @@
 class AppConstants {
-  static const String appName = 'Lumo';
+  static const String appName = 'Keepr';
   static const String appTagline =
       'Discover markets, shops, and products near you.';
 
@@ -13,7 +13,4 @@ class AppConstants {
   static const String imagePath = 'assets/images/';
   static const String iconPath = 'assets/icons/';
   static const String fontPath = 'assets/fonts/';
-
-  // API Endpoints Placeholder
-  static const String baseUrl = 'https://api.lumo.app/v1';
 }

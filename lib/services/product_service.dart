@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../models/product.dart';
+import 'account_role_service.dart';
 
 class ProductService {
   ProductService({
@@ -109,16 +110,18 @@ class ProductService {
   }
 
   Future<String?> pickAndUploadImage() async {
+    final User? user = _auth.currentUser;
+    if (user == null) {
+      throw StateError('Sign in before uploading a product image.');
+    }
+    await const AccountRoleService().requireSeller(user);
+
     final XFile? selected = await _imagePicker.pickImage(
       source: ImageSource.gallery,
       imageQuality: 82,
       maxWidth: 1600,
     );
     if (selected == null) return null;
-    final User? user = _auth.currentUser;
-    if (user == null) {
-      throw StateError('Sign in before uploading a product image.');
-    }
 
     final String imageId = DateTime.now().microsecondsSinceEpoch.toString();
     final Reference imageRef = _storage
@@ -139,6 +142,7 @@ class ProductService {
     if (user == null) {
       throw StateError('Sign in before publishing a product.');
     }
+    await const AccountRoleService().requireSeller(user);
     final bool isNewProduct = existingId == null;
     final DocumentReference<Map<String, dynamic>> document = isNewProduct
         ? _products.doc()

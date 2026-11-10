@@ -28,7 +28,7 @@ class LoadingIndicator extends StatelessWidget {
 class ConnectingLoader extends StatelessWidget {
   final String message;
 
-  const ConnectingLoader({super.key, this.message = 'Connecting To Lumo...'});
+  const ConnectingLoader({super.key, this.message = 'Connecting to Keepr...'});
 
   @override
   Widget build(BuildContext context) {

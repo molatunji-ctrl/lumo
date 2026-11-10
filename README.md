@@ -1,6 +1,6 @@
-# lumo
+# Keepr
 
-Discover markets, shops, and products near you.
+Discover local shops and products near you.
 
 ## Getting Started
 
@@ -35,11 +35,24 @@ unavailable.
 ## Live products, favourites, and nearby map
 
 Product screens read published listings from the Firestore `products`
-collection. A signed-in user can open **Manage my products** from the account
-screen to add, edit, publish, or unpublish listings. Product photos are uploaded
-to Firebase Storage. Favourites are stored under
+collection. Accounts with the Firebase custom claim `role: seller` can open
+**Manage my products** from the account screen to add, edit, publish, or
+unpublish listings. Other signed-in users have shopper access. Product photos
+are uploaded to Firebase Storage. Favourites are stored under
 `users/{userId}/favorites/{productId}` and are private to that account.
 Published listings and their product images are publicly readable.
+
+The seller role check in the Flutter app only controls the user interface.
+Firestore and Storage security rules must also require an approved seller role
+before accepting product or image writes; client-side checks are not a security
+boundary. Seller application submission is not connected because no application
+endpoint has been provided.
+
+The Flutter package and displayed app name are now Keepr. Android and Apple
+bundle identifiers remain `com.example.lumo` to match the currently configured
+Firebase apps; register the final Keepr identifiers in Firebase before changing
+those platform IDs. Replace the default Flutter launcher icons after the final
+Keepr logo asset is supplied.
 
 Enable Cloud Firestore and Firebase Storage in the `keepr-co` Firebase project,
 then deploy the included ownership and publication rules:
@@ -69,4 +82,4 @@ Google Cloud. Create a key restricted to this app/platform and API set.
 The app requests location permission when it needs GPS. If permission is
 denied, the map remains usable but cannot show the user's location or compute
 distances. Location is not reverse-geocoded; the header shows coordinates.
-# lumo
+# Keepr

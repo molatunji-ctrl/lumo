@@ -13,6 +13,7 @@ import 'package:intl_phone_field/phone_number.dart';
 import '../../core/routing/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../firebase_options.dart';
+import '../../services/account_role_service.dart';
 import '../../widgets/app_bottom_navigation.dart';
 
 class AccountScreen extends StatefulWidget {
@@ -46,10 +47,10 @@ class _AccountScreenState extends State<AccountScreen> {
     'google': 'Google',
     'use_phone': 'Use your phone number instead',
     'already_account': 'Already have an account?',
-    'new_to_lumo': 'New to Lumo?',
+    'new_to_keepr': 'New to Keepr?',
     'create_account': 'Create account',
     'sign_in': 'Sign in',
-    'terms': 'By continuing, you agree to Lumo’s Terms of Service and Privacy Policy.',
+    'terms': 'By continuing, you agree to Keepr’s Terms of Service and Privacy Policy.',
     'back_sign_in': 'Back to sign in',
     'verify_phone': 'Verify your phone',
     'phone_sign_in': 'Sign in with phone',
@@ -65,10 +66,10 @@ class _AccountScreenState extends State<AccountScreen> {
     'resend_code': 'Resend code',
     'resend_countdown': 'Resend code in {seconds}',
     'signed_in': 'You’re signed in',
-    'welcome': 'Welcome to Lumo, {name}.',
+    'welcome': 'Welcome to Keepr, {name}.',
     'signed_in_with': 'Signed in with',
     'sign_out': 'Sign out',
-    'member': 'Lumo member',
+    'member': 'Keepr member',
     'email_provider': 'Email and password',
     'phone_provider': 'Phone',
     'password_reset_sent': 'Password reset email sent.',
@@ -128,8 +129,8 @@ class _AccountScreenState extends State<AccountScreen> {
   bool _obscurePassword = true;
   String? _errorMessage;
   String? _verificationId;
-  Future<IdTokenResult>? _adminClaimCheck;
-  String? _adminClaimCheckUid;
+  Future<String?>? _accountRoleCheck;
+  String? _accountRoleCheckUid;
   String _phoneNumberE164 = '+234';
   Map<String, String> _copy = _defaultCopy;
   int? _resendToken;
@@ -454,7 +455,7 @@ class _AccountScreenState extends State<AccountScreen> {
               Text(
                 _isCreatingAccount
                     ? _text('already_account')
-                    : _text('new_to_lumo'),
+                    : _text('new_to_keepr'),
                 style: TextStyle(color: secondary),
               ),
               TextButton(
@@ -658,9 +659,12 @@ class _AccountScreenState extends State<AccountScreen> {
     final String displayName = user.displayName?.trim().isNotEmpty == true
         ? user.displayName!.trim()
         : user.email ?? user.phoneNumber ?? _text('member');
-    if (_adminClaimCheckUid != user.uid) {
-      _adminClaimCheckUid = user.uid;
-      _adminClaimCheck = user.getIdTokenResult(true);
+    if (_accountRoleCheckUid != user.uid) {
+      _accountRoleCheckUid = user.uid;
+      _accountRoleCheck = const AccountRoleService().roleFor(
+        user,
+        forceRefresh: true,
+      );
     }
 
     return Column(
@@ -721,52 +725,98 @@ class _AccountScreenState extends State<AccountScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        OutlinedButton.icon(
-          onPressed: () =>
-              Navigator.pushNamed(context, AppRouter.sellerProducts),
-          icon: const Icon(Icons.storefront_outlined),
-          label: const Text('Manage my products'),
-          style: OutlinedButton.styleFrom(
-            foregroundColor: foreground,
-            side: BorderSide(color: border),
-            minimumSize: const Size.fromHeight(48),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14),
-            ),
-          ),
-        ),
-        FutureBuilder<IdTokenResult>(
-          future: _adminClaimCheck,
+        FutureBuilder<String?>(
+          future: _accountRoleCheck,
           builder:
-              (BuildContext context, AsyncSnapshot<IdTokenResult> snapshot) {
+              (BuildContext context, AsyncSnapshot<String?> snapshot) {
                 if (snapshot.hasError) {
                   return Padding(
                     padding: const EdgeInsets.only(top: 8),
                     child: Text(
-                      'Could not check admin access: ${snapshot.error}',
+                      'Could not verify account permissions: ${snapshot.error}',
                       style: TextStyle(color: AppColors.error),
                     ),
                   );
                 }
-                if (snapshot.data?.claims?['role'] != 'admin') {
-                  return const SizedBox.shrink();
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
                 }
-                return Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: OutlinedButton.icon(
-                    onPressed: () =>
-                        Navigator.pushNamed(context, AppRouter.adminDashboard),
-                    icon: const Icon(Icons.admin_panel_settings_outlined),
-                    label: const Text('Admin dashboard'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: foreground,
-                      side: BorderSide(color: border),
-                      minimumSize: const Size.fromHeight(48),
-                      shape: RoundedRectangleBorder(
+
+                final String role = snapshot.data ?? 'shopper';
+                final bool isSeller = role == sellerRole;
+                final bool isAdmin = role == adminRole;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
+                        border: Border.all(color: border),
                         borderRadius: BorderRadius.circular(14),
                       ),
+                      child: _accountDetail(
+                        'Account type',
+                        isAdmin
+                            ? 'Administrator'
+                            : isSeller
+                            ? 'Seller'
+                            : 'Shopper',
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 8),
+                    if (isSeller)
+                      OutlinedButton.icon(
+                        onPressed: () => Navigator.pushNamed(
+                          context,
+                          AppRouter.sellerProducts,
+                        ),
+                        icon: const Icon(Icons.storefront_outlined),
+                        label: const Text('Manage my products'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: foreground,
+                          side: BorderSide(color: border),
+                          minimumSize: const Size.fromHeight(48),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                      )
+                    else if (!isAdmin)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Text(
+                          'Seller tools are available to approved sellers. '
+                          'Seller applications are not available in the app yet.',
+                          style: TextStyle(color: secondary, height: 1.4),
+                        ),
+                      ),
+                    if (isAdmin)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: OutlinedButton.icon(
+                          onPressed: () => Navigator.pushNamed(
+                            context,
+                            AppRouter.adminDashboard,
+                          ),
+                          icon: const Icon(
+                            Icons.admin_panel_settings_outlined,
+                          ),
+                          label: const Text('Admin dashboard'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: foreground,
+                            side: BorderSide(color: border),
+                            minimumSize: const Size.fromHeight(48),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 );
               },
         ),

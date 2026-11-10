@@ -1,15 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lumo/app.dart';
+import 'package:keepr/app.dart';
 
 void main() {
-  testWidgets('Lumo displays splash screen and navigates to home', (
+  testWidgets('Keepr displays splash screen and navigates to home', (
     WidgetTester tester,
   ) async {
-    // Launch the real Lumo application.
-    await tester.pumpWidget(const LumoApp());
+    // Launch the real Keepr application.
+    await tester.pumpWidget(const KeeprApp());
 
     // Confirm that the splash screen appears first.
-    expect(find.text('lumo'), findsOneWidget);
+    expect(find.text('keepr'), findsWidgets);
 
     // Advance past the splash screen's two-second delay.
     // Avoid pumpAndSettle because the splash animation repeats.

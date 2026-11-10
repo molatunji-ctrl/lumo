@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/product.dart';
+import '../../services/account_role_service.dart';
 import '../../services/location_service.dart';
 import '../../services/product_service.dart';
 
@@ -18,76 +19,106 @@ class SellerProductsScreen extends StatelessWidget {
       );
     }
 
-    final ProductService service = ProductService();
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My products'),
-        actions: [
-          IconButton(
-            tooltip: 'Add product',
-            onPressed: () => _editProduct(context),
-            icon: const Icon(Icons.add),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _editProduct(context),
-        icon: const Icon(Icons.add),
-        label: const Text('Add product'),
-      ),
-      body: StreamBuilder<List<Product>>(
-        stream: service.watchSellerProducts(user.uid),
-        builder: (BuildContext context, AsyncSnapshot<List<Product>> snapshot) {
-          if (snapshot.hasError) {
+      appBar: AppBar(title: const Text('My products')),
+      body: FutureBuilder<String?>(
+        future: const AccountRoleService().roleFor(user, forceRefresh: true),
+        builder: (BuildContext context, AsyncSnapshot<String?> roleSnapshot) {
+          if (roleSnapshot.hasError) {
             return _Message(
-              message: 'Could not load your products: ${snapshot.error}',
+              message: 'Could not verify seller access: ${roleSnapshot.error}',
             );
           }
-          if (!snapshot.hasData) {
+          if (roleSnapshot.connectionState != ConnectionState.done) {
             return const Center(child: CircularProgressIndicator());
           }
-          final List<Product> products = snapshot.data!;
-          if (products.isEmpty) {
+          if (roleSnapshot.data != sellerRole) {
             return const _Message(
-              icon: Icons.storefront_outlined,
-              message: 'Your listings will appear here. Add a product to get started.',
+              icon: Icons.lock_outline,
+              message:
+                  'Seller access is required to manage products. '
+                  'Only approved seller accounts can create listings.',
             );
           }
-          return ListView.separated(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
-            itemCount: products.length,
-            separatorBuilder: (_, _) => const SizedBox(height: 10),
-            itemBuilder: (BuildContext context, int index) {
-              final Product product = products[index];
-              return Card(
-                child: ListTile(
-                  leading: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      product.imageUrl,
-                      width: 56,
-                      height: 56,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) => const SizedBox(
-                        width: 56,
-                        height: 56,
-                        child: Icon(Icons.image_not_supported_outlined),
-                      ),
-                    ),
-                  ),
-                  title: Text(product.name),
-                  subtitle: Text(
-                    '${product.displayPrice} · '
-                    '${product.isPublished ? 'Published' : 'Draft'}',
-                  ),
-                  trailing: IconButton(
-                    tooltip: 'Edit product',
-                    icon: const Icon(Icons.edit_outlined),
-                    onPressed: () => _editProduct(context, product),
-                  ),
+
+          final ProductService service = ProductService();
+          return Stack(
+            children: [
+              StreamBuilder<List<Product>>(
+                stream: service.watchSellerProducts(user.uid),
+                builder:
+                    (
+                      BuildContext context,
+                      AsyncSnapshot<List<Product>> snapshot,
+                    ) {
+                      if (snapshot.hasError) {
+                        return _Message(
+                          message:
+                              'Could not load your products: ${snapshot.error}',
+                        );
+                      }
+                      if (!snapshot.hasData) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      final List<Product> products = snapshot.data!;
+                      if (products.isEmpty) {
+                        return const _Message(
+                          icon: Icons.storefront_outlined,
+                          message:
+                              'Your listings will appear here. '
+                              'Add a product to get started.',
+                        );
+                      }
+                      return ListView.separated(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+                        itemCount: products.length,
+                        separatorBuilder: (_, _) => const SizedBox(height: 10),
+                        itemBuilder: (BuildContext context, int index) {
+                          final Product product = products[index];
+                          return Card(
+                            child: ListTile(
+                              leading: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.network(
+                                  product.imageUrl,
+                                  width: 56,
+                                  height: 56,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, _, _) => const SizedBox(
+                                    width: 56,
+                                    height: 56,
+                                    child: Icon(
+                                      Icons.image_not_supported_outlined,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              title: Text(product.name),
+                              subtitle: Text(
+                                '${product.displayPrice} · '
+                                '${product.isPublished ? 'Published' : 'Draft'}',
+                              ),
+                              trailing: IconButton(
+                                tooltip: 'Edit product',
+                                icon: const Icon(Icons.edit_outlined),
+                                onPressed: () => _editProduct(context, product),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+              ),
+              Positioned(
+                right: 16,
+                bottom: 16,
+                child: FloatingActionButton.extended(
+                  onPressed: () => _editProduct(context),
+                  icon: const Icon(Icons.add),
+                  label: const Text('Add product'),
                 ),
-              );
-            },
+              ),
+            ],
           );
         },
       ),

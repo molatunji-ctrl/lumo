@@ -1,5 +1,5 @@
-name: lumo
-description: "Discover markets, shops, and products near you."
+name: keepr
+description: "Discover local shops and products near you."
 publish_to: 'none'
 
 version: 1.0.0+1

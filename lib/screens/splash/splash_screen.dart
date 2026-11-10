@@ -9,7 +9,7 @@ import '../../core/theme/app_colors.dart';
 import '../home/home_screen.dart';
 
 /// ============================================================
-/// LUMO — CINEMATIC COMMERCE UNIVERSE
+/// KEEPR — CINEMATIC COMMERCE UNIVERSE
 ///
 /// ACT I   : Awakening      (dark, dust, light blooms)
 /// ACT II  : Universe       (products spiral out, core resolves)
@@ -387,7 +387,7 @@ class _SplashScreenState extends State<SplashScreen>
                   width: coreSide,
                   height: coreSide,
                   child: FittedBox(
-                    child: _LumoCore(
+                    child: _KeeprCore(
                       time: time,
                       intro: intro,
                       pulse: Curves.easeOut.transform(
@@ -483,7 +483,7 @@ class _SplashScreenState extends State<SplashScreen>
                         ),
                         const SizedBox(width: 10),
                         const Text(
-                          'LUMO / WORLD 01',
+                          'KEEPR / WORLD 01',
                           style: TextStyle(
                             color: Colors.white70,
                             fontSize: 10,
@@ -1245,11 +1245,11 @@ class _FashionUniversePainter extends CustomPainter {
 }
 
 // ============================================================
-// CENTRAL LUMO CORE
+// CENTRAL KEEPR CORE
 // ============================================================
 
-class _LumoCore extends StatelessWidget {
-  const _LumoCore({
+class _KeeprCore extends StatelessWidget {
+  const _KeeprCore({
     required this.time,
     required this.intro,
     required this.pulse,
@@ -1332,7 +1332,7 @@ class _LumoCore extends StatelessWidget {
                   ImageFiltered(
                     imageFilter: ui.ImageFilter.blur(sigmaX: 22, sigmaY: 22),
                     child: Text(
-                      'lumo',
+                      'keepr',
                       textScaler: TextScaler.noScaling,
                       style: wordStyleBase.copyWith(
                         color: orange.withValues(
@@ -1349,7 +1349,7 @@ class _LumoCore extends StatelessWidget {
                     child: ImageFiltered(
                       imageFilter: ui.ImageFilter.blur(sigmaX: 8, sigmaY: 8),
                       child: Text(
-                        'lumo',
+                        'keepr',
                         textScaler: TextScaler.noScaling,
                         style: wordStyleBase.copyWith(
                           color: Colors.black.withValues(alpha: 0.6),
@@ -1374,7 +1374,7 @@ class _LumoCore extends StatelessWidget {
                       ).createShader(bounds);
                     },
                     child: Text(
-                      'lumo',
+                      'keepr',
                       textScaler: TextScaler.noScaling,
                       style: wordStyleBase.copyWith(
                         color: Colors.white,
@@ -1621,7 +1621,7 @@ class _EnterButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: 'Enter Lumo marketplace',
+      label: 'Enter Keepr marketplace',
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -1644,7 +1644,7 @@ class _EnterButton extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'ENTER LUMO',
+                  'ENTER KEEPR',
                   style: TextStyle(
                     color: Color(0xFF07101D),
                     fontSize: 10,

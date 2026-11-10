@@ -1,11 +1,11 @@
 {
-    "name": "lumo",
-    "short_name": "lumo",
+    "name": "Keepr",
+    "short_name": "Keepr",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "Discover markets, shops, and products near you.",
+    "background_color": "#151B26",
+    "theme_color": "#FF8A3D",
+    "description": "Discover local shops and products near you.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

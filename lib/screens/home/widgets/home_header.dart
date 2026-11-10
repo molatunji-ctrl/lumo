@@ -82,7 +82,7 @@ class _HomeHeaderState extends State<HomeHeader> {
         children: [
           // Logo
           Text(
-            'lumo',
+            'keepr',
             style: TextStyle(
               color: textColor,
               fontSize: 28,

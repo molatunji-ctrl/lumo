@@ -18,8 +18,8 @@ class ThemeController extends ChangeNotifier {
   }
 }
 
-class LumoApp extends StatelessWidget {
-  const LumoApp({super.key});
+class KeeprApp extends StatelessWidget {
+  const KeeprApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class LumoApp extends StatelessWidget {
       animation: ThemeController.instance,
       builder: (context, _) {
         return MaterialApp(
-          title: 'Lumo',
+          title: 'Keepr',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
