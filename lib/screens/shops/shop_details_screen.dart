@@ -4,6 +4,7 @@ import '../../core/theme/app_colors.dart';
 import '../../models/shop.dart';
 import '../../models/product.dart';
 import '../../core/routing/app_router.dart';
+import '../../services/product_service.dart';
 
 class ShopDetailsScreen extends StatelessWidget {
   final Shop? shop;
@@ -165,12 +166,12 @@ class ShopDetailsScreen extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // Section: Explore the sample collection
+            // Section: Published products from this shop
             Padding(
               padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 20),
-              child: const Text(
-                'Explore the sample collection',
-                style: TextStyle(
+              child: Text(
+                'Products from ${activeShop.name}',
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -183,20 +184,46 @@ class ShopDetailsScreen extends StatelessWidget {
             // Collection Product Grid
             Padding(
               padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 20),
-              child: GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: isDesktop ? 4 : 2,
-                  childAspectRatio: 0.8,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                ),
-                itemCount: 4,
-                itemBuilder: (context, index) {
-                  final product =
-                      Product.mockProducts[index % Product.mockProducts.length];
-                  return _buildCollectionProductCard(context, product);
+              child: StreamBuilder<List<Product>>(
+                stream: ProductService().watchPublishedProducts(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Text(
+                      'Products could not be loaded: ${snapshot.error}',
+                    );
+                  }
+                  if (!snapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  final List<Product> products = snapshot.data!
+                      .where(
+                        (Product product) =>
+                            product.shopName.toLowerCase() ==
+                            activeShop.name.toLowerCase(),
+                      )
+                      .toList(growable: false);
+                  if (products.isEmpty) {
+                    return const Padding(
+                      padding: EdgeInsets.all(24),
+                      child: Text(
+                        'This shop has no published products yet.',
+                        textAlign: TextAlign.center,
+                      ),
+                    );
+                  }
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: isDesktop ? 4 : 2,
+                      childAspectRatio: 0.8,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                    ),
+                    itemCount: products.length,
+                    itemBuilder: (context, index) =>
+                        _buildCollectionProductCard(context, products[index]),
+                  );
                 },
               ),
             ),

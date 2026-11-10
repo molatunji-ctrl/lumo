@@ -51,7 +51,7 @@ class ConnectingLoader extends StatelessWidget {
                 child: Text(
                   message,
                   style: const TextStyle(
-                    color: AppColors.textLight,
+                    color: AppColors.darkTextPrimary,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),

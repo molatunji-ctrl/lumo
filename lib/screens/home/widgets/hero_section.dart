@@ -255,9 +255,9 @@ class _HeroSectionState extends State<HeroSection> {
               'Popular:',
               style: TextStyle(color: secondaryColor, fontSize: 13),
             ),
-            _buildPopularTag('iPhone 15', textColor),
-            _buildPopularTag('Office chairs', textColor),
-            _buildPopularTag('Sneakers', textColor),
+            _buildPopularTag('sneakers size 42', textColor),
+            _buildPopularTag('phone charger', textColor),
+            _buildPopularTag('market bags', textColor),
           ],
         ),
       ],
@@ -329,7 +329,7 @@ class _HeroSectionState extends State<HeroSection> {
           ),
         ),
 
-        // Top Right Badge Overlay: "8 min from you"
+        // Avoid displaying an estimated journey time before a shop is selected.
         Positioned(
           top: 16,
           right: 16,
@@ -358,7 +358,7 @@ class _HeroSectionState extends State<HeroSection> {
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  '8 min from you',
+                  'Find nearby shops',
                   style: TextStyle(
                     color: isDarkMode
                         ? Colors.white
@@ -372,7 +372,7 @@ class _HeroSectionState extends State<HeroSection> {
           ),
         ),
 
-        // Bottom Left Floating Card: "Found nearby - 12 electronics shops"
+        // Use general discovery guidance instead of a hard-coded shop count.
         Positioned(
           bottom: 16,
           left: 12,
@@ -414,7 +414,7 @@ class _HeroSectionState extends State<HeroSection> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text(
-                      'Found nearby',
+                      'Before you visit',
                       style: TextStyle(
                         color: AppColors.lightTextSecondary,
                         fontSize: 11,
@@ -423,7 +423,7 @@ class _HeroSectionState extends State<HeroSection> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '12 electronics shops',
+                      'Confirm availability with the seller',
                       style: TextStyle(
                         color: isDarkMode
                             ? Colors.white
@@ -439,7 +439,7 @@ class _HeroSectionState extends State<HeroSection> {
                   width: 7,
                   height: 7,
                   decoration: const BoxDecoration(
-                    color: AppColors.green,
+                    color: Colors.amber,
                     shape: BoxShape.circle,
                   ),
                 ),

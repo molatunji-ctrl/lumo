@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "629742261070-ia5hlecbe792ropotoo0ubq1e1tuv3es.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.lumo",
+            "certificate_hash": "69fed40f348346945bf8bad79718639a0e084afa"
+          }
+        },
+        {
           "client_id": "629742261070-jr45cqkgc9ll751jdrtqioe3563vgavn.apps.googleusercontent.com",
           "client_type": 3
         }

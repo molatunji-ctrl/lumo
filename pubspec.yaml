@@ -16,6 +16,15 @@ dependencies:
   cupertino_icons: ^1.0.8
   firebase_core: ^5.1.0
   flutter_dotenv: ^6.0.1
+  firebase_auth: ^7.0.1
+  google_sign_in: ^7.2.0
+  firebase_remote_config: ^7.0.1
+  intl_phone_field: ^3.2.0
+  cloud_firestore: ^7.1.0
+  firebase_storage: ^14.0.1
+  image_picker: ^1.2.4
+  geolocator: ^14.1.2
+  google_maps_flutter: ^2.19.0
 
 dev_dependencies:
   flutter_test:

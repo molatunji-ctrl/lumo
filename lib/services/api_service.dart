@@ -1,6 +1,7 @@
 import '../models/product.dart';
 import '../models/shop.dart';
 import '../models/market.dart';
+import 'product_service.dart';
 
 class ApiService {
   // Simulates network latency
@@ -9,8 +10,7 @@ class ApiService {
   }
 
   Future<List<Product>> getProducts() async {
-    await _delay();
-    return Product.mockProducts;
+    return ProductService().getPublishedProducts();
   }
 
   Future<List<Shop>> getShops() async {

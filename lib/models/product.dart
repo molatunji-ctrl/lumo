@@ -1,3 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+double? _readFirestoreNumber(Object? value) {
+  if (value is num) return value.toDouble();
+  if (value is String) return double.tryParse(value);
+  return null;
+}
+
 class Product {
   final String id;
   final String name;
@@ -11,6 +19,10 @@ class Product {
   final String category;
   final bool isFavourite;
   final bool isSellerListed;
+  final String? sellerUid;
+  final bool isPublished;
+  final double? shopLatitude;
+  final double? shopLongitude;
 
   const Product({
     required this.id,
@@ -21,10 +33,14 @@ class Product {
     required this.imageUrl,
     this.rating = 4.8,
     required this.shopName,
-    this.shopLocation = 'Ikeja, Lagos',
+    this.shopLocation = 'Location not provided',
     required this.category,
     this.isFavourite = false,
     this.isSellerListed = true,
+    this.sellerUid,
+    this.isPublished = true,
+    this.shopLatitude,
+    this.shopLongitude,
   });
 
   String get displayPrice =>
@@ -36,16 +52,28 @@ class Product {
       id: json['id'] as String,
       name: json['name'] as String,
       description: json['description'] as String,
-      price: json['price'] != null ? (json['price'] as num).toDouble() : null,
+      price: _readFirestoreNumber(json['price']),
       formattedPrice: json['formattedPrice'] as String?,
       imageUrl: json['imageUrl'] as String,
-      rating: (json['rating'] as num?)?.toDouble() ?? 4.8,
+      rating: _readFirestoreNumber(json['rating']) ?? 4.8,
       shopName: json['shopName'] as String,
-      shopLocation: json['shopLocation'] as String? ?? 'Ikeja, Lagos',
+      shopLocation: json['shopLocation'] as String? ?? 'Location not provided',
       category: json['category'] as String,
       isFavourite: json['isFavourite'] as bool? ?? false,
       isSellerListed: json['isSellerListed'] as bool? ?? true,
+      sellerUid: json['sellerUid'] as String?,
+      isPublished: json['isPublished'] as bool? ?? true,
+      shopLatitude: _readFirestoreNumber(json['shopLatitude']),
+      shopLongitude: _readFirestoreNumber(json['shopLongitude']),
     );
+  }
+
+  factory Product.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
+    final Map<String, dynamic>? data = doc.data();
+    if (data == null) {
+      throw FormatException('Product ${doc.id} has no document data.');
+    }
+    return Product.fromJson(<String, dynamic>{...data, 'id': doc.id});
   }
 
   Map<String, dynamic> toJson() {
@@ -62,6 +90,10 @@ class Product {
       'category': category,
       'isFavourite': isFavourite,
       'isSellerListed': isSellerListed,
+      'sellerUid': sellerUid,
+      'isPublished': isPublished,
+      'shopLatitude': shopLatitude,
+      'shopLongitude': shopLongitude,
     };
   }
 

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+
 import '../../core/theme/app_colors.dart';
 import '../../models/product.dart';
 import '../../models/shop.dart';
 import '../../models/market.dart';
 import '../../widgets/app_bottom_navigation.dart';
+import '../../services/product_service.dart';
+import '../../widgets/product_favorite_button.dart';
 import '../home/widgets/home_header.dart';
 import '../../core/routing/app_router.dart';
 
@@ -20,7 +23,8 @@ class _SearchScreenState extends State<SearchScreen> {
   late final TextEditingController _searchController;
   String _currentQuery = '';
   int _selectedTab = 0; // 0: Products, 1: Shops, 2: Markets
-  String _sortMode = 'Relevance'; // 'Relevance', 'Price: Low to High', 'Price: High to Low'
+  String _sortMode =
+      'Relevance'; // 'Relevance', 'Price: Low to High', 'Price: High to Low'
 
   // Filter Checkboxes
   bool _audioChecked = false;
@@ -28,14 +32,7 @@ class _SearchScreenState extends State<SearchScreen> {
   bool _computingChecked = false;
   bool _accessoriesChecked = false;
 
-  bool _under2km = false;
-  bool _under5km = false;
-  bool _under10km = false;
-
   bool _priceProvided = false;
-  bool _recentlyUpdated = false;
-
-  final Set<String> _favouriteProductIds = {};
 
   @override
   void initState() {
@@ -69,8 +66,6 @@ class _SearchScreenState extends State<SearchScreen> {
     return tags;
   }
 
-
-
   void _removeFilterTag(String tag) {
     setState(() {
       switch (tag) {
@@ -99,16 +94,11 @@ class _SearchScreenState extends State<SearchScreen> {
       _phonesChecked = false;
       _computingChecked = false;
       _accessoriesChecked = false;
-      _under2km = false;
-      _under5km = false;
-      _under10km = false;
       _priceProvided = false;
-      _recentlyUpdated = false;
     });
   }
 
-
-  List<Product> get _filteredProducts {
+  List<Product> _filteredProducts(List<Product> source) {
     final query = _currentQuery.trim().toLowerCase();
 
     final selectedCategories = <String>[
@@ -118,7 +108,7 @@ class _SearchScreenState extends State<SearchScreen> {
       if (_accessoriesChecked) 'accessor',
     ];
 
-    final products = Product.mockProducts.where((product) {
+    final products = source.where((product) {
       final searchableText = [
         product.name,
         product.description,
@@ -127,17 +117,16 @@ class _SearchScreenState extends State<SearchScreen> {
         product.shopLocation,
       ].join(' ').toLowerCase();
 
-      final matchesQuery =
-          query.isEmpty || searchableText.contains(query);
+      final matchesQuery = query.isEmpty || searchableText.contains(query);
 
       final category = product.category.toLowerCase();
-      final matchesCategory = selectedCategories.isEmpty ||
+      final matchesCategory =
+          selectedCategories.isEmpty ||
           selectedCategories.any(category.contains);
 
       // Numeric price is the reliable value available for sorting
       // and filtering. A formatted label alone is not sufficient.
-      final matchesPrice =
-          !_priceProvided || product.price != null;
+      final matchesPrice = !_priceProvided || product.price != null;
 
       return matchesQuery && matchesCategory && matchesPrice;
     }).toList();
@@ -167,8 +156,8 @@ class _SearchScreenState extends State<SearchScreen> {
         });
         break;
       default:
-      // Keep the source order for Relevance until a real
-      // relevance-ranking implementation is added.
+        // Keep the source order for Relevance until a real
+        // relevance-ranking implementation is added.
         break;
     }
 
@@ -205,395 +194,477 @@ class _SearchScreenState extends State<SearchScreen> {
     final bool isDesktop = width > 800;
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    final Color bgColor = isDarkMode ? AppColors.darkBackground : AppColors.lightBackground;
-    final Color surfaceColor = isDarkMode ? AppColors.darkSurface : AppColors.lightSurface;
-    final Color borderColor = isDarkMode ? AppColors.darkCardBorder : AppColors.lightCardBorder;
-    final Color textColor = isDarkMode ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final Color secondaryColor = isDarkMode ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final Color bgColor = isDarkMode
+        ? AppColors.darkBackground
+        : AppColors.lightBackground;
+    final Color surfaceColor = isDarkMode
+        ? AppColors.darkSurface
+        : AppColors.lightSurface;
+    final Color borderColor = isDarkMode
+        ? AppColors.darkCardBorder
+        : AppColors.lightCardBorder;
+    final Color textColor = isDarkMode
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final Color secondaryColor = isDarkMode
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
 
-    final products = _filteredProducts;
     final shops = _filteredShops;
     final markets = _filteredMarkets;
 
     return Scaffold(
       backgroundColor: bgColor,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const HomeHeader(),
-
-              // Search Input Box
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: isDesktop ? 48 : 20,
-                  vertical: 16,
-                ),
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 720),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: surfaceColor,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: borderColor),
-                      ),
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.search_rounded,
-                            color: secondaryColor,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: TextField(
-                              controller: _searchController,
-                              style: TextStyle(color: textColor, fontSize: 14),
-                              onSubmitted: _onSearchSubmitted,
-                              decoration: const InputDecoration(
-                                hintText: 'Search products, shops or markets',
-                                hintStyle: TextStyle(
-                                  color: AppColors.lightTextMuted,
-                                  fontSize: 14,
-                                ),
-                                border: InputBorder.none,
-                                isDense: true,
-                                contentPadding: EdgeInsets.symmetric(vertical: 12),
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () => _onSearchSubmitted(),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 10,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.orange,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: const Text(
-                                'Search',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+        child: StreamBuilder<List<Product>>(
+          stream: ProductService().watchPublishedProducts(),
+          builder: (context, productSnapshot) {
+            if (productSnapshot.hasError) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Text(
+                    'Products could not be loaded: ${productSnapshot.error}',
+                    textAlign: TextAlign.center,
                   ),
                 ),
-              ),
+              );
+            }
+            if (!productSnapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            final products = _filteredProducts(productSnapshot.data!);
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const HomeHeader(),
 
-              const SizedBox(height: 8),
-
-              // Search Title & Sort/Filter Controls
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'SEARCH RESULTS',
-                            style: TextStyle(
-                              color: AppColors.lightTextMuted,
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.2,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '"$_currentQuery"',
-                            style: TextStyle(
-                              color: textColor,
-                              fontSize: isDesktop ? 32 : 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '${_selectedTab == 0 ? products.length : _selectedTab == 1 ? shops.length : markets.length} matching results · Sample listings',
-                            style: const TextStyle(
-                              color: AppColors.lightTextMuted,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
-                      ),
+                  // Search Input Box
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isDesktop ? 48 : 20,
+                      vertical: 16,
                     ),
-                    if (isDesktop)
-                      Row(
-                        children: [
-                          // Sort Dropdown
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: surfaceColor,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: borderColor),
-                            ),
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                value: _sortMode,
-                                dropdownColor: surfaceColor,
-                                icon: Icon(Icons.tune_rounded, size: 16, color: textColor),
-                                style: TextStyle(
-                                  color: textColor,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                items: const [
-                                  DropdownMenuItem(
-                                      value: 'Relevance', child: Text('Sort: Relevance')),
-                                  DropdownMenuItem(
-                                      value: 'Price: Low to High',
-                                      child: Text('Sort: Price Low to High')),
-                                  DropdownMenuItem(
-                                      value: 'Price: High to Low',
-                                      child: Text('Sort: Price High to Low')),
-                                ],
-                                onChanged: (val) {
-                                  if (val != null) {
-                                    setState(() => _sortMode = val);
-                                  }
-                                },
-                              ),
-                            ),
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 720),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: surfaceColor,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: borderColor),
                           ),
-                          const SizedBox(width: 12),
-
-                          // Filters Badge Button
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: surfaceColor,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: borderColor),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(Icons.filter_list_rounded, size: 16, color: textColor),
-                                const SizedBox(width: 6),
-                                Text(
-                                  'Filters',
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 4,
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.search_rounded,
+                                color: secondaryColor,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: TextField(
+                                  controller: _searchController,
                                   style: TextStyle(
                                     color: textColor,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
                                   ),
-                                ),
-                                const SizedBox(width: 6),
-                                Container(
-                                  padding: const EdgeInsets.all(5),
-                                  decoration: const BoxDecoration(
-                                    color: AppColors.orange,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Text(
-                                    '${_activeFilterTags.length}',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
+                                  onSubmitted: _onSearchSubmitted,
+                                  decoration: const InputDecoration(
+                                    hintText:
+                                        'Search products, shops or markets',
+                                    hintStyle: TextStyle(
+                                      color: AppColors.lightTextMuted,
+                                      fontSize: 14,
+                                    ),
+                                    border: InputBorder.none,
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.symmetric(
+                                      vertical: 12,
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              // Category Result Tabs (Products 24 | Shops 12 | Markets 3)
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 20),
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(color: borderColor, width: 1),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      _buildTabItem(
-                        'Products',
-                        '${products.length}',
-                        index: 0,
-                        textColor: textColor,
-                      ),
-                      const SizedBox(width: 24),
-                      _buildTabItem(
-                        'Shops',
-                        '${shops.length}',
-                        index: 1,
-                        textColor: textColor,
-                      ),
-                      const SizedBox(width: 24),
-                      _buildTabItem(
-                        'Markets',
-                        '${markets.length}',
-                        index: 2,
-                        textColor: textColor,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // Active Filter Chips
-              if (_selectedTab == 0 && _activeFilterTags.isNotEmpty)
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 20),
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      ..._activeFilterTags.map(
-                            (tag) => Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: surfaceColor,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: borderColor),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                tag,
-                                style: TextStyle(
-                                  color: textColor,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                ),
                               ),
-                              const SizedBox(width: 6),
                               GestureDetector(
-                                onTap: () => _removeFilterTag(tag),
-                                child: Icon(
-                                  Icons.close,
-                                  color: secondaryColor,
-                                  size: 14,
+                                onTap: () => _onSearchSubmitted(),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.orange,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: const Text(
+                                    'Search',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ],
                           ),
                         ),
                       ),
-                      GestureDetector(
-                        onTap: _clearAllFilters,
-                        child: const Text(
-                          'Clear all',
-                          style: TextStyle(
-                            color: AppColors.lightTextMuted,
-                            fontSize: 12,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-              const SizedBox(height: 20),
-
-              // TAB CONTENT VIEW
-              if (_selectedTab == 0)
-                _buildProductsTabContent(
-                  isDesktop: isDesktop,
-                  products: products,
-                  surfaceColor: surfaceColor,
-                  borderColor: borderColor,
-                  textColor: textColor,
-                  secondaryColor: secondaryColor,
-                )
-              else if (_selectedTab == 1)
-                _buildShopsTabContent(
-                  isDesktop: isDesktop,
-                  shops: shops,
-                  surfaceColor: surfaceColor,
-                  borderColor: borderColor,
-                  textColor: textColor,
-                  secondaryColor: secondaryColor,
-                )
-              else
-                _buildMarketsTabContent(
-                  isDesktop: isDesktop,
-                  markets: markets,
-                  surfaceColor: surfaceColor,
-                  borderColor: borderColor,
-                  textColor: textColor,
-                  secondaryColor: secondaryColor,
-                ),
-
-              const SizedBox(height: 32),
-
-              // Load More Button
-              Center(
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    backgroundColor: surfaceColor,
-                    foregroundColor: textColor,
-                    side: BorderSide(color: borderColor),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 32, vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  onPressed: null,
-                  child: const Text(
-                    'Load more results (coming soon)',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
 
-              const SizedBox(height: 40),
-            ],
-          ),
+                  const SizedBox(height: 8),
+
+                  // Search Title & Sort/Filter Controls
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isDesktop ? 48 : 20,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'SEARCH RESULTS',
+                                style: TextStyle(
+                                  color: AppColors.lightTextMuted,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.2,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '"$_currentQuery"',
+                                style: TextStyle(
+                                  color: textColor,
+                                  fontSize: isDesktop ? 32 : 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${_selectedTab == 0
+                                    ? products.length
+                                    : _selectedTab == 1
+                                    ? shops.length
+                                    : markets.length} matching results',
+                                style: const TextStyle(
+                                  color: AppColors.lightTextMuted,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (isDesktop)
+                          Row(
+                            children: [
+                              // Sort Dropdown
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: surfaceColor,
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(color: borderColor),
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton<String>(
+                                    value: _sortMode,
+                                    dropdownColor: surfaceColor,
+                                    icon: Icon(
+                                      Icons.tune_rounded,
+                                      size: 16,
+                                      color: textColor,
+                                    ),
+                                    style: TextStyle(
+                                      color: textColor,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    items: const [
+                                      DropdownMenuItem(
+                                        value: 'Relevance',
+                                        child: Text('Sort: Relevance'),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'Price: Low to High',
+                                        child: Text('Sort: Price Low to High'),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'Price: High to Low',
+                                        child: Text('Sort: Price High to Low'),
+                                      ),
+                                    ],
+                                    onChanged: (val) {
+                                      if (val != null) {
+                                        setState(() => _sortMode = val);
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+
+                              // Filters Badge Button
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: surfaceColor,
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(color: borderColor),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.filter_list_rounded,
+                                      size: 16,
+                                      color: textColor,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      'Filters',
+                                      style: TextStyle(
+                                        color: textColor,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Container(
+                                      padding: const EdgeInsets.all(5),
+                                      decoration: const BoxDecoration(
+                                        color: AppColors.orange,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Text(
+                                        '${_activeFilterTags.length}',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Category Result Tabs (Products 24 | Shops 12 | Markets 3)
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isDesktop ? 48 : 20,
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(color: borderColor, width: 1),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          _buildTabItem(
+                            'Products',
+                            '${products.length}',
+                            index: 0,
+                            textColor: textColor,
+                          ),
+                          const SizedBox(width: 24),
+                          _buildTabItem(
+                            'Shops',
+                            '${shops.length}',
+                            index: 1,
+                            textColor: textColor,
+                          ),
+                          const SizedBox(width: 24),
+                          _buildTabItem(
+                            'Markets',
+                            '${markets.length}',
+                            index: 2,
+                            textColor: textColor,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Active Filter Chips
+                  if (_selectedTab == 0 && _activeFilterTags.isNotEmpty)
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isDesktop ? 48 : 20,
+                      ),
+                      child: Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          ..._activeFilterTags.map(
+                            (tag) => Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: surfaceColor,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: borderColor),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    tag,
+                                    style: TextStyle(
+                                      color: textColor,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  GestureDetector(
+                                    onTap: () => _removeFilterTag(tag),
+                                    child: Icon(
+                                      Icons.close,
+                                      color: secondaryColor,
+                                      size: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: _clearAllFilters,
+                            child: const Text(
+                              'Clear all',
+                              style: TextStyle(
+                                color: AppColors.lightTextMuted,
+                                fontSize: 12,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                  const SizedBox(height: 20),
+
+                  // TAB CONTENT VIEW
+                  if (_selectedTab == 0)
+                    _buildProductsTabContent(
+                      isDesktop: isDesktop,
+                      products: products,
+                      surfaceColor: surfaceColor,
+                      borderColor: borderColor,
+                      textColor: textColor,
+                      secondaryColor: secondaryColor,
+                    )
+                  else if (_selectedTab == 1)
+                    _buildShopsTabContent(
+                      isDesktop: isDesktop,
+                      shops: shops,
+                      surfaceColor: surfaceColor,
+                      borderColor: borderColor,
+                      textColor: textColor,
+                      secondaryColor: secondaryColor,
+                    )
+                  else
+                    _buildMarketsTabContent(
+                      isDesktop: isDesktop,
+                      markets: markets,
+                      surfaceColor: surfaceColor,
+                      borderColor: borderColor,
+                      textColor: textColor,
+                      secondaryColor: secondaryColor,
+                    ),
+
+                  const SizedBox(height: 32),
+
+                  // Load More Button
+                  Center(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: surfaceColor,
+                        foregroundColor: textColor,
+                        side: BorderSide(color: borderColor),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 14,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: null,
+                      child: const Text(
+                        'Load more results (coming soon)',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 40),
+                ],
+              ),
+            );
+          },
         ),
       ),
       bottomNavigationBar: AppBottomNavigation(
         currentIndex: 1,
         onTap: (index) {
           if (index == 1) return;
-          if (index == 0) Navigator.pushReplacementNamed(context, AppRouter.home);
-          if (index == 2) Navigator.pushReplacementNamed(context, AppRouter.nearby);
-          if (index == 3) Navigator.pushReplacementNamed(context, AppRouter.favourites);
-          if (index == 4) Navigator.pushReplacementNamed(context, AppRouter.account);
+          if (index == 0) {
+            Navigator.pushReplacementNamed(context, AppRouter.home);
+          }
+          if (index == 2) {
+            Navigator.pushReplacementNamed(context, AppRouter.nearby);
+          }
+          if (index == 3) {
+            Navigator.pushReplacementNamed(context, AppRouter.favourites);
+          }
+          if (index == 4) {
+            Navigator.pushReplacementNamed(context, AppRouter.account);
+          }
         },
       ),
     );
   }
 
-  Widget _buildTabItem(String title, String count,
-      {required int index, required Color textColor}) {
+  Widget _buildTabItem(
+    String title,
+    String count, {
+    required int index,
+    required Color textColor,
+  }) {
     final bool isSelected = _selectedTab == index;
     return GestureDetector(
       onTap: () => setState(() => _selectedTab = index),
@@ -629,7 +700,9 @@ class _SearchScreenState extends State<SearchScreen> {
               child: Text(
                 count,
                 style: TextStyle(
-                  color: isSelected ? AppColors.orange : AppColors.lightTextMuted,
+                  color: isSelected
+                      ? AppColors.orange
+                      : AppColors.lightTextMuted,
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
                 ),
@@ -653,73 +726,73 @@ class _SearchScreenState extends State<SearchScreen> {
       padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 20),
       child: isDesktop
           ? Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 260,
-            child: _buildFilterSidebar(
-              surfaceColor,
-              borderColor,
-              textColor,
-              secondaryColor,
-              products.length,
-            ),
-          ),
-          const SizedBox(width: 28),
-          Expanded(
-            child: _buildProductsGrid(
-              isDesktop: true,
-              products: products,
-              surfaceColor: surfaceColor,
-              borderColor: borderColor,
-              textColor: textColor,
-              secondaryColor: secondaryColor,
-            ),
-          ),
-        ],
-      )
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: 260,
+                  child: _buildFilterSidebar(
+                    surfaceColor,
+                    borderColor,
+                    textColor,
+                    secondaryColor,
+                    products.length,
+                  ),
+                ),
+                const SizedBox(width: 28),
+                Expanded(
+                  child: _buildProductsGrid(
+                    isDesktop: true,
+                    products: products,
+                    surfaceColor: surfaceColor,
+                    borderColor: borderColor,
+                    textColor: textColor,
+                    secondaryColor: secondaryColor,
+                  ),
+                ),
+              ],
+            )
           : Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ExpansionTile(
-            title: Text(
-              'Filters (${_activeFilterTags.length} active)',
-              style: TextStyle(
-                color: textColor,
-                fontWeight: FontWeight.bold,
-              ),
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ExpansionTile(
+                  title: Text(
+                    'Filters (${_activeFilterTags.length} active)',
+                    style: TextStyle(
+                      color: textColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  children: [
+                    _buildFilterSidebar(
+                      surfaceColor,
+                      borderColor,
+                      textColor,
+                      secondaryColor,
+                      products.length,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                _buildProductsGrid(
+                  isDesktop: false,
+                  products: products,
+                  surfaceColor: surfaceColor,
+                  borderColor: borderColor,
+                  textColor: textColor,
+                  secondaryColor: secondaryColor,
+                ),
+              ],
             ),
-            children: [
-              _buildFilterSidebar(
-                surfaceColor,
-                borderColor,
-                textColor,
-                secondaryColor,
-                products.length,
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          _buildProductsGrid(
-            isDesktop: false,
-            products: products,
-            surfaceColor: surfaceColor,
-            borderColor: borderColor,
-            textColor: textColor,
-            secondaryColor: secondaryColor,
-          ),
-        ],
-      ),
     );
   }
 
   Widget _buildFilterSidebar(
-      Color surfaceColor,
-      Color borderColor,
-      Color textColor,
-      Color secondaryColor,
-      int resultCount,
-      ) {
+    Color surfaceColor,
+    Color borderColor,
+    Color textColor,
+    Color secondaryColor,
+    int resultCount,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -764,14 +837,34 @@ class _SearchScreenState extends State<SearchScreen> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          _buildFilterCheckbox('Audio & headphones', '', _audioChecked, secondaryColor,
-                  (v) => setState(() => _audioChecked = v!)),
-          _buildFilterCheckbox('Phones', '', _phonesChecked, secondaryColor,
-                  (v) => setState(() => _phonesChecked = v!)),
-          _buildFilterCheckbox('Computing', '', _computingChecked, secondaryColor,
-                  (v) => setState(() => _computingChecked = v!)),
-          _buildFilterCheckbox('Accessories', '', _accessoriesChecked, secondaryColor,
-                  (v) => setState(() => _accessoriesChecked = v!)),
+          _buildFilterCheckbox(
+            'Audio & headphones',
+            '',
+            _audioChecked,
+            secondaryColor,
+            (v) => setState(() => _audioChecked = v!),
+          ),
+          _buildFilterCheckbox(
+            'Phones',
+            '',
+            _phonesChecked,
+            secondaryColor,
+            (v) => setState(() => _phonesChecked = v!),
+          ),
+          _buildFilterCheckbox(
+            'Computing',
+            '',
+            _computingChecked,
+            secondaryColor,
+            (v) => setState(() => _computingChecked = v!),
+          ),
+          _buildFilterCheckbox(
+            'Accessories',
+            '',
+            _accessoriesChecked,
+            secondaryColor,
+            (v) => setState(() => _accessoriesChecked = v!),
+          ),
 
           const SizedBox(height: 16),
 
@@ -806,7 +899,7 @@ class _SearchScreenState extends State<SearchScreen> {
             '',
             _priceProvided,
             secondaryColor,
-                (v) => setState(() => _priceProvided = v ?? false),
+            (v) => setState(() => _priceProvided = v ?? false),
           ),
           const SizedBox(height: 6),
           Text(
@@ -846,12 +939,12 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildFilterCheckbox(
-      String label,
-      String count,
-      bool value,
-      Color secondaryColor,
-      ValueChanged<bool?> onChanged,
-      ) {
+    String label,
+    String count,
+    bool value,
+    Color secondaryColor,
+    ValueChanged<bool?> onChanged,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -872,10 +965,7 @@ class _SearchScreenState extends State<SearchScreen> {
           Expanded(
             child: Text(
               label,
-              style: TextStyle(
-                color: secondaryColor,
-                fontSize: 12,
-              ),
+              style: TextStyle(color: secondaryColor, fontSize: 12),
             ),
           ),
           if (count.isNotEmpty)
@@ -905,16 +995,27 @@ class _SearchScreenState extends State<SearchScreen> {
           padding: const EdgeInsets.all(32.0),
           child: Column(
             children: [
-              const Icon(Icons.search_off, size: 64, color: AppColors.lightTextMuted),
+              const Icon(
+                Icons.search_off,
+                size: 64,
+                color: AppColors.lightTextMuted,
+              ),
               const SizedBox(height: 12),
               Text(
                 'No products match your filters',
-                style: TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 8),
               TextButton(
                 onPressed: _clearAllFilters,
-                child: const Text('Reset all filters', style: TextStyle(color: AppColors.orange)),
+                child: const Text(
+                  'Reset all filters',
+                  style: TextStyle(color: AppColors.orange),
+                ),
               ),
             ],
           ),
@@ -935,21 +1036,25 @@ class _SearchScreenState extends State<SearchScreen> {
       itemBuilder: (context, index) {
         final product = products[index];
         return _buildProductCardItem(
-            context, product, surfaceColor, borderColor, textColor, secondaryColor);
+          context,
+          product,
+          surfaceColor,
+          borderColor,
+          textColor,
+          secondaryColor,
+        );
       },
     );
   }
 
   Widget _buildProductCardItem(
-      BuildContext context,
-      Product product,
-      Color surfaceColor,
-      Color borderColor,
-      Color textColor,
-      Color secondaryColor,
-      ) {
-    final isFav = _favouriteProductIds.contains(product.id) || product.isFavourite;
-
+    BuildContext context,
+    Product product,
+    Color surfaceColor,
+    Color borderColor,
+    Color textColor,
+    Color secondaryColor,
+  ) {
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(
@@ -971,8 +1076,9 @@ class _SearchScreenState extends State<SearchScreen> {
               child: Stack(
                 children: [
                   ClipRRect(
-                    borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(16)),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(16),
+                    ),
                     child: Image.network(
                       product.imageUrl,
                       width: double.infinity,
@@ -987,7 +1093,9 @@ class _SearchScreenState extends State<SearchScreen> {
                       left: 8,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(12),
@@ -1005,29 +1113,9 @@ class _SearchScreenState extends State<SearchScreen> {
                   Positioned(
                     top: 8,
                     right: 8,
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (isFav) {
-                            _favouriteProductIds.remove(product.id);
-                          } else {
-                            _favouriteProductIds.add(product.id);
-                          }
-                        });
-                      },
-                      child: Container(
-                        width: 28,
-                        height: 28,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          isFav ? Icons.favorite : Icons.favorite_border,
-                          color: isFav ? AppColors.orange : Colors.black,
-                          size: 16,
-                        ),
-                      ),
+                    child: ProductFavoriteButton(
+                      product: product,
+                      iconSize: 16,
                     ),
                   ),
                 ],
@@ -1040,10 +1128,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 children: [
                   Text(
                     product.category,
-                    style: TextStyle(
-                      color: secondaryColor,
-                      fontSize: 11,
-                    ),
+                    style: TextStyle(color: secondaryColor, fontSize: 11),
                   ),
                   const SizedBox(height: 2),
                   Text(
@@ -1074,13 +1159,6 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
                   ),
                   const SizedBox(height: 2),
-                  const Text(
-                    'Illustrative seller price',
-                    style: TextStyle(
-                      color: AppColors.lightTextMuted,
-                      fontSize: 10,
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -1102,8 +1180,10 @@ class _SearchScreenState extends State<SearchScreen> {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(32.0),
-          child: Text('No shops found matching "$_currentQuery"',
-              style: TextStyle(color: textColor, fontSize: 16)),
+          child: Text(
+            'No shops found matching "$_currentQuery"',
+            style: TextStyle(color: textColor, fontSize: 16),
+          ),
         ),
       );
     }
@@ -1167,10 +1247,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         const SizedBox(height: 2),
                         Text(
                           shop.category,
-                          style: TextStyle(
-                            color: secondaryColor,
-                            fontSize: 12,
-                          ),
+                          style: TextStyle(color: secondaryColor, fontSize: 12),
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -1204,8 +1281,10 @@ class _SearchScreenState extends State<SearchScreen> {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(32.0),
-          child: Text('No markets found matching "$_currentQuery"',
-              style: TextStyle(color: textColor, fontSize: 16)),
+          child: Text(
+            'No markets found matching "$_currentQuery"',
+            style: TextStyle(color: textColor, fontSize: 16),
+          ),
         ),
       );
     }
@@ -1255,10 +1334,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         const SizedBox(height: 2),
                         Text(
                           '${market.location} · ${market.description}',
-                          style: TextStyle(
-                            color: secondaryColor,
-                            fontSize: 12,
-                          ),
+                          style: TextStyle(color: secondaryColor, fontSize: 12),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -1273,11 +1349,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       ],
                     ),
                   ),
-                  Icon(
-                    Icons.arrow_forward_rounded,
-                    color: textColor,
-                    size: 18,
-                  ),
+                  Icon(Icons.arrow_forward_rounded, color: textColor, size: 18),
                 ],
               ),
             ),

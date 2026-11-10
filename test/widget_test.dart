@@ -16,9 +16,9 @@ void main() {
     await tester.pump(const Duration(seconds: 2));
     await tester.pump();
 
-    // Verify headings from the redesigned home screen.
-    expect(find.text('Popular near Ikeja'), findsOneWidget);
-    expect(find.text('Shops worth a visit'), findsOneWidget);
-    expect(find.text('Markets to explore'), findsOneWidget);
+    // Verify the physical-shop discovery journey on the home screen.
+    expect(find.text('Products at local shops'), findsOneWidget);
+    expect(find.text('Find a shop. Then plan your visit.'), findsOneWidget);
+    expect(find.text('Explore nearby'), findsOneWidget);
   });
 }

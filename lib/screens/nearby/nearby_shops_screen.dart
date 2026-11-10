@@ -1,9 +1,16 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
-import '../../core/theme/app_colors.dart';
-import '../../models/shop.dart';
-import '../../widgets/app_bottom_navigation.dart';
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 import '../../core/routing/app_router.dart';
+import '../../core/theme/app_colors.dart';
+import '../../models/product.dart';
+import '../../services/location_service.dart';
+import '../../services/product_service.dart';
+import '../../widgets/app_bottom_navigation.dart';
+import '../../widgets/product_favorite_button.dart';
 
 class NearbyShopsScreen extends StatefulWidget {
   const NearbyShopsScreen({super.key});
@@ -13,447 +20,304 @@ class NearbyShopsScreen extends StatefulWidget {
 }
 
 class _NearbyShopsScreenState extends State<NearbyShopsScreen> {
-  String _activeTab = 'Browse this area';
-  bool _isMapView = false;
+  final LocationService _locationService = LocationService();
+  final Stream<List<Product>> _productsStream = ProductService()
+      .watchPublishedProducts();
+  Position? _position;
+  GoogleMapController? _mapController;
+  String? _locationError;
+  bool _isLoadingLocation = false;
+  bool _isMapView = true;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_findPosition());
+  }
+
+  @override
+  void dispose() {
+    _mapController?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _findPosition() async {
+    setState(() {
+      _isLoadingLocation = true;
+      _locationError = null;
+    });
+    try {
+      final Position position = await _locationService.getCurrentPosition();
+      if (!mounted) return;
+      setState(() => _position = position);
+      await _mapController?.animateCamera(
+        CameraUpdate.newLatLngZoom(
+          LatLng(position.latitude, position.longitude),
+          13,
+        ),
+      );
+    } catch (error) {
+      if (mounted) setState(() => _locationError = error.toString());
+    } finally {
+      if (mounted) setState(() => _isLoadingLocation = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final double width = MediaQuery.of(context).size.width;
-    final bool isDesktop = width > 800;
-
+    final bool isDesktop = MediaQuery.sizeOf(context).width > 800;
     return Scaffold(
       backgroundColor: AppColors.darkBackground,
       appBar: AppBar(
-        title: const Text('Explore Nearby'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pushReplacementNamed(context, AppRouter.home);
-          },
-        ),
-      ),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: isDesktop ? 48 : 20,
-                vertical: 20,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Headline & Subtitle
-                  Text(
-                    'Good finds, just around the corner.',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: isDesktop ? 32 : 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  const Text(
-                    'Exploring Ikeja, Lagos · Area selected manually. Distances are unavailable.',
-                    style: TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 13,
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // Filter Tabs
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        _buildFilterTab(
-                          'Browse this area',
-                          isSelected: _activeTab == 'Browse this area',
-                        ),
-                        const SizedBox(width: 8),
-                        _buildFilterTab(
-                          'All places',
-                          isSelected: _activeTab == 'All places',
-                        ),
-                        const SizedBox(width: 8),
-                        _buildFilterTab(
-                          'Shops',
-                          isSelected: _activeTab == 'Shops',
-                        ),
-                        const SizedBox(width: 8),
-                        _buildFilterTab(
-                          'Markets',
-                          isSelected: _activeTab == 'Markets',
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Content Split (Desktop/Tablet 2 columns, Phone stacked)
-                  isDesktop
-                      ? Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              flex: 5,
-                              child: _buildShopListSection(context),
-                            ),
-                            const SizedBox(width: 24),
-                            Expanded(flex: 7, child: _buildMapPreviewSection()),
-                          ],
-                        )
-                      : (_isMapView
-                            ? _buildMapPreviewSection(height: 500)
-                            : _buildShopListSection(context)),
-
-                  const SizedBox(height: 20),
-
-                  // Disclaimer
-                  const Center(
-                    child: Text(
-                      'Lumo design preview · Fictional listings and illustrative imagery. Confirm details with each shop before visiting.',
-                      style: TextStyle(
-                        color: AppColors.textMuted,
-                        fontSize: 11,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  const SizedBox(height: 60),
-                ],
-              ),
-            ),
+        title: const Text('Explore nearby'),
+        actions: [
+          IconButton(
+            tooltip: 'Use my current location',
+            onPressed: _isLoadingLocation ? null : _findPosition,
+            icon: _isLoadingLocation
+                ? const SizedBox.square(
+                    dimension: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.my_location),
           ),
-
-          // Floating Map / List Toggle Button for Mobile
-          if (!isDesktop)
-            Positioned(
-              bottom: 24,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _isMapView = !_isMapView;
-                    });
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.navy,
-                      borderRadius: BorderRadius.circular(30),
-                      border: Border.all(
-                        color: AppColors.cardBorder,
-                        width: 1.5,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.4),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          _isMapView
-                              ? Icons.format_list_bulleted_rounded
-                              : Icons.map_rounded,
-                          color: Colors.white,
-                          size: 18,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          _isMapView ? 'List' : 'Map',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+        ],
+      ),
+      body: StreamBuilder<List<Product>>(
+        stream: _productsStream,
+        builder: (BuildContext context, AsyncSnapshot<List<Product>> snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  'Nearby products could not be loaded: ${snapshot.error}',
+                  textAlign: TextAlign.center,
                 ),
               ),
-            ),
-        ],
+            );
+          }
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final List<Product> products = snapshot.data!;
+          final List<Product> locatedProducts = products
+              .where(
+                (Product product) =>
+                    product.shopLatitude != null &&
+                    product.shopLongitude != null,
+              )
+              .toList(growable: false);
+          if (isDesktop) {
+            return Column(
+              children: [
+                if (_locationError != null)
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Text(
+                      _locationError!,
+                      style: const TextStyle(color: Colors.amber),
+                    ),
+                  ),
+                Expanded(
+                  child: Row(
+                    children: [
+                      Expanded(child: _buildProductList(products)),
+                      Expanded(child: _buildMap(locatedProducts)),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          }
+          final List<Product> nearbyProducts = products.toList();
+          if (_position != null) {
+            double distanceFor(Product product) {
+              if (product.shopLatitude == null ||
+                  product.shopLongitude == null) {
+                return double.infinity;
+              }
+              return _locationService.calculateDistanceInKm(
+                _position!.latitude,
+                _position!.longitude,
+                product.shopLatitude!,
+                product.shopLongitude!,
+              );
+            }
+
+            nearbyProducts.sort(
+              (Product a, Product b) =>
+                  distanceFor(a).compareTo(distanceFor(b)),
+            );
+          }
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _position == null
+                            ? 'Enable location to see your position and nearby listings.'
+                            : 'Your current position is shown on the map.',
+                        style: const TextStyle(color: AppColors.textSecondary),
+                      ),
+                    ),
+                    SegmentedButton<bool>(
+                      segments: const [
+                        ButtonSegment<bool>(
+                          value: true,
+                          icon: Icon(Icons.map_outlined),
+                          label: Text('Map'),
+                        ),
+                        ButtonSegment<bool>(
+                          value: false,
+                          icon: Icon(Icons.list_alt),
+                          label: Text('List'),
+                        ),
+                      ],
+                      selected: <bool>{_isMapView},
+                      onSelectionChanged: (Set<bool> selection) =>
+                          setState(() => _isMapView = selection.first),
+                    ),
+                  ],
+                ),
+              ),
+              if (_locationError != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    _locationError!,
+                    style: const TextStyle(color: Colors.amber),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              Expanded(
+                child: _isMapView
+                    ? _buildMap(locatedProducts)
+                    : _buildProductList(nearbyProducts),
+              ),
+            ],
+          );
+        },
       ),
       bottomNavigationBar: AppBottomNavigation(
         currentIndex: 2,
-        onTap: (index) {
-          if (index == 2) return;
-          if (index == 0) {
-            Navigator.pushReplacementNamed(context, AppRouter.home);
-          }
-          if (index == 1) {
-            Navigator.pushReplacementNamed(context, AppRouter.search);
-          }
-          if (index == 3) {
-            Navigator.pushReplacementNamed(context, AppRouter.favourites);
-          }
-          if (index == 4) {
-            Navigator.pushReplacementNamed(context, AppRouter.account);
-          }
+        onTap: (int index) {
+          final String? route = switch (index) {
+            0 => AppRouter.home,
+            1 => AppRouter.search,
+            3 => AppRouter.favourites,
+            4 => AppRouter.account,
+            _ => null,
+          };
+          if (route != null) Navigator.pushReplacementNamed(context, route);
         },
       ),
     );
   }
 
-  Widget _buildFilterTab(String title, {required bool isSelected}) {
-    return GestureDetector(
-      onTap: () {
-        setState(() => _activeTab = title);
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.orange : AppColors.surface,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: isSelected ? AppColors.orange : AppColors.cardBorder,
-          ),
-        ),
-        child: Text(
-          title,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 13,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-          ),
-        ),
+  Widget _buildMap(List<Product> products) {
+    final Position? position = _position;
+    final LatLng center = position == null
+        ? const LatLng(0, 0)
+        : LatLng(position.latitude, position.longitude);
+    return GoogleMap(
+      initialCameraPosition: CameraPosition(
+        target: center,
+        zoom: position == null ? 2 : 13,
       ),
+      myLocationEnabled: position != null,
+      myLocationButtonEnabled: false,
+      onMapCreated: (GoogleMapController controller) {
+        _mapController = controller;
+        if (position != null) {
+          unawaited(
+            controller.animateCamera(CameraUpdate.newLatLngZoom(center, 13)),
+          );
+        }
+      },
+      markers: <Marker>{
+        for (final Product product in products)
+          Marker(
+            markerId: MarkerId(product.id),
+            position: LatLng(product.shopLatitude!, product.shopLongitude!),
+            infoWindow: InfoWindow(
+              title: product.name,
+              snippet: '${product.shopName} · ${product.displayPrice}',
+              onTap: () => Navigator.pushNamed(
+                context,
+                AppRouter.productDetails,
+                arguments: product,
+              ),
+            ),
+          ),
+      },
     );
   }
 
-  Widget _buildShopListSection(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Discover the area',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+  Widget _buildProductList(List<Product> products) {
+    if (products.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: Text(
+            'No products have been published yet.',
+            textAlign: TextAlign.center,
           ),
         ),
-        const SizedBox(height: 12),
-
-        // Shop Card 1: Kora Collective
-        _buildAreaShopCard(
-          context,
-          shop: Shop.mockShops[0],
-          subtitle: 'Fashion & accessories · Ikeja',
-        ),
-
-        const SizedBox(height: 12),
-
-        // Shop Card 2: Computer Village
-        _buildAreaShopCard(
-          context,
-          shop: Shop.mockShops[2],
-          subtitle: 'Shopping area · Ikeja, Lagos',
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAreaShopCard(
-    BuildContext context, {
-    required Shop shop,
-    required String subtitle,
-  }) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, AppRouter.shopDetails, arguments: shop);
-      },
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.cardBorder),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
+      );
+    }
+    return ListView.separated(
+      padding: const EdgeInsets.all(16),
+      itemCount: products.length,
+      separatorBuilder: (_, _) => const SizedBox(height: 10),
+      itemBuilder: (BuildContext context, int index) {
+        final Product product = products[index];
+        final bool hasCoordinates =
+            product.shopLatitude != null && product.shopLongitude != null;
+        final double? distance = _position != null && hasCoordinates
+            ? _locationService.calculateDistanceInKm(
+                _position!.latitude,
+                _position!.longitude,
+                product.shopLatitude!,
+                product.shopLongitude!,
+              )
+            : null;
+        return Card(
+          child: ListTile(
+            onTap: () => Navigator.pushNamed(
+              context,
+              AppRouter.productDetails,
+              arguments: product,
+            ),
+            leading: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
               child: Image.network(
-                shop.imageUrl,
-                height: 120,
-                width: double.infinity,
+                product.imageUrl,
+                width: 56,
+                height: 56,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    Container(height: 120, color: AppColors.darkBackground),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              shop.name,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              subtitle,
-              style: const TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 12,
-              ),
-            ),
-            const SizedBox(height: 2),
-            const Text(
-              'Sample shop · Identity unverified',
-              style: TextStyle(color: AppColors.textMuted, fontSize: 11),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Discover this shop',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMapPreviewSection({double height = 420}) {
-    return Container(
-      height: height,
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder),
-      ),
-      child: Column(
-        children: [
-          Expanded(
-            child: Stack(
-              children: [
-                // Map background
-                Container(
-                  width: double.infinity,
-                  color: const Color(0xFF131D2E),
-                  child: Center(
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        const Text(
-                          'IKEJA',
-                          style: TextStyle(
-                            color: AppColors.cardBorder,
-                            fontSize: 48,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 4,
-                          ),
-                        ),
-                        // Shop Pin 1
-                        Positioned(
-                          left: 80,
-                          top: 100,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.darkBackground,
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: AppColors.cardBorder),
-                            ),
-                            child: const Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.location_on,
-                                  color: AppColors.orange,
-                                  size: 14,
-                                ),
-                                SizedBox(width: 4),
-                                Text(
-                                  'Kora Collective',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        // Shop Pin 2
-                        Positioned(
-                          right: 60,
-                          top: 80,
-                          child: Container(
-                            width: 32,
-                            height: 32,
-                            decoration: const BoxDecoration(
-                              color: AppColors.orange,
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.storefront,
-                              color: Colors.white,
-                              size: 18,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                errorBuilder: (_, _, _) => const SizedBox(
+                  width: 56,
+                  height: 56,
+                  child: Icon(Icons.image_not_supported_outlined),
                 ),
-              ],
+              ),
+            ),
+            title: Text(product.name),
+            subtitle: Text(
+              '${product.shopName} · '
+              '${distance == null ? product.shopLocation : '${distance.toStringAsFixed(1)} km away'}',
+            ),
+            trailing: ProductFavoriteButton(
+              product: product,
+              iconColor: AppColors.orange,
             ),
           ),
-          // Disclaimer Footer
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: const BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
-            ),
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Map preview — Illustrative only',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 2),
-                Text(
-                  'Not a navigable map. Browse the place list instead. User maps and location placeholders will be connected during development.',
-                  style: TextStyle(color: AppColors.textMuted, fontSize: 11),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

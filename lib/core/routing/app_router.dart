@@ -13,6 +13,7 @@ import '../../screens/markets/markets_screen.dart';
 import '../../screens/nearby/nearby_shops_screen.dart';
 import '../../screens/favourites/favourites_screen.dart';
 import '../../screens/account/account_screen.dart';
+import '../../screens/products/seller_products_screen.dart';
 
 class AppRouter {
   AppRouter._();
@@ -27,6 +28,7 @@ class AppRouter {
   static const String nearby = '/nearby';
   static const String favourites = '/favourites';
   static const String account = '/account';
+  static const String sellerProducts = '/seller-products';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -109,6 +111,12 @@ class AppRouter {
         return MaterialPageRoute<void>(
           settings: settings,
           builder: (_) => const AccountScreen(),
+        );
+
+      case sellerProducts:
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (_) => const SellerProductsScreen(),
         );
 
       default:

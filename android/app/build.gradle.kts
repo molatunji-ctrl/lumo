@@ -11,6 +11,8 @@ android {
     namespace = "com.example.lumo"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
+    manifestPlaceholders["MAPS_API_KEY"] =
+        project.findProperty("MAPS_API_KEY")?.toString() ?: ""
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

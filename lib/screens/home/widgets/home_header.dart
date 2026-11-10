@@ -1,20 +1,53 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../app.dart';
 import '../../../core/routing/app_router.dart';
+import '../../../services/location_service.dart';
 
-class HomeHeader extends StatelessWidget {
+class HomeHeader extends StatefulWidget {
   final String locationName;
   final VoidCallback? onLocationTap;
   final VoidCallback? onNotificationTap;
 
   const HomeHeader({
     super.key,
-    this.locationName = 'Ikeja, Lagos',
+    this.locationName = 'Finding location',
     this.onLocationTap,
     this.onNotificationTap,
   });
+
+  @override
+  State<HomeHeader> createState() => _HomeHeaderState();
+}
+
+class _HomeHeaderState extends State<HomeHeader> {
+  final LocationService _locationService = LocationService();
+  late String _locationLabel;
+
+  @override
+  void initState() {
+    super.initState();
+    _locationLabel = widget.locationName;
+    unawaited(_loadLocation());
+  }
+
+  Future<void> _loadLocation() async {
+    try {
+      final position = await _locationService.getCurrentPosition();
+      if (!mounted) return;
+      setState(() {
+        _locationLabel =
+            '${position.latitude.toStringAsFixed(2)}, '
+            '${position.longitude.toStringAsFixed(2)}';
+      });
+    } catch (error, stackTrace) {
+      debugPrint('Could not read the current location: $error\n$stackTrace');
+      if (mounted) setState(() => _locationLabel = 'Location unavailable');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +138,9 @@ class HomeHeader extends StatelessWidget {
             children: [
               // Location Dropdown Pill
               GestureDetector(
-                onTap: onLocationTap,
+                onTap:
+                    widget.onLocationTap ??
+                    () => Navigator.pushNamed(context, AppRouter.nearby),
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10,
@@ -130,7 +165,7 @@ class HomeHeader extends StatelessWidget {
                           maxWidth: isDesktop ? 120 : 68,
                         ),
                         child: Text(
-                          locationName,
+                          _locationLabel,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -173,7 +208,7 @@ class HomeHeader extends StatelessWidget {
                 surfaceColor: surfaceColor,
                 borderColor: borderColor,
                 iconColor: textColor,
-                onTap: onNotificationTap ?? () {},
+                onTap: widget.onNotificationTap ?? () {},
               ),
 
               if (isDesktop) ...[

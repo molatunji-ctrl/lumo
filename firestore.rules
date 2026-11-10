@@ -1,0 +1,80 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function ownsProduct() {
+      return signedIn() && resource.data.sellerUid == request.auth.uid;
+    }
+
+    function validProduct(data) {
+      return data.keys().hasAll([
+            'name',
+            'description',
+            'price',
+            'imageUrl',
+            'shopName',
+            'shopLocation',
+            'category',
+            'sellerUid',
+            'isPublished',
+            'isSellerListed',
+            'updatedAt',
+            'shopLatitude',
+            'shopLongitude'
+          ]) &&
+          data.name is string &&
+          data.name.size() > 0 &&
+          data.description is string &&
+          data.description.size() > 0 &&
+          data.price is number &&
+          data.price > 0 &&
+          data.imageUrl is string &&
+          data.imageUrl.size() > 0 &&
+          data.shopName is string &&
+          data.shopName.size() > 0 &&
+          data.shopLocation is string &&
+          data.shopLocation.size() > 0 &&
+          data.category is string &&
+          data.category.size() > 0 &&
+          data.isPublished is bool &&
+          data.isSellerListed == true &&
+          data.updatedAt is timestamp &&
+          ((data.shopLatitude == null && data.shopLongitude == null) ||
+            (data.shopLatitude is number &&
+              data.shopLatitude >= -90 &&
+              data.shopLatitude <= 90 &&
+              data.shopLongitude is number &&
+              data.shopLongitude >= -180 &&
+              data.shopLongitude <= 180));
+    }
+
+    match /products/{productId} {
+      allow read: if resource.data.isPublished == true ||
+        (signedIn() && resource.data.sellerUid == request.auth.uid);
+      allow create: if signedIn() &&
+        request.resource.data.sellerUid == request.auth.uid &&
+        validProduct(request.resource.data) &&
+        request.resource.data.createdAt is timestamp;
+      allow update: if ownsProduct() &&
+        request.resource.data.sellerUid == resource.data.sellerUid &&
+        validProduct(request.resource.data);
+      allow delete: if ownsProduct();
+    }
+
+    match /users/{userId}/favorites/{productId} {
+      allow read, delete: if signedIn() && request.auth.uid == userId;
+      allow create, update: if signedIn() &&
+        request.auth.uid == userId &&
+        request.resource.data.id == productId &&
+        exists(/databases/$(database)/documents/products/$(productId)) &&
+        get(/databases/$(database)/documents/products/$(productId)).data.isPublished == true;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
