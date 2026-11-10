@@ -76,14 +76,18 @@ class _AccountScreenState extends State<AccountScreen> {
         currentIndex: 4,
         onTap: (index) {
           if (index == 4) return;
-          if (index == 0)
+          if (index == 0) {
             Navigator.pushReplacementNamed(context, AppRouter.home);
-          if (index == 1)
+          }
+          if (index == 1) {
             Navigator.pushReplacementNamed(context, AppRouter.search);
-          if (index == 2)
+          }
+          if (index == 2) {
             Navigator.pushReplacementNamed(context, AppRouter.nearby);
-          if (index == 3)
+          }
+          if (index == 3) {
             Navigator.pushReplacementNamed(context, AppRouter.favourites);
+          }
         },
       ),
     );
@@ -105,8 +109,8 @@ class _AccountScreenState extends State<AccountScreen> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              const Color(0xFF0B132B).withOpacity(0.9),
-              const Color(0xFF152D4D).withOpacity(0.7),
+              const Color(0xFF0B132B).withValues(alpha: 0.9),
+              const Color(0xFF152D4D).withValues(alpha: 0.7),
             ],
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
@@ -165,7 +169,7 @@ class _AccountScreenState extends State<AccountScreen> {
         border: Border.all(color: borderColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),

@@ -156,7 +156,7 @@ class _NearbyShopsScreenState extends State<NearbyShopsScreen> {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.4),
+                          color: Colors.black.withValues(alpha: 0.4),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
@@ -193,14 +193,18 @@ class _NearbyShopsScreenState extends State<NearbyShopsScreen> {
         currentIndex: 2,
         onTap: (index) {
           if (index == 2) return;
-          if (index == 0)
+          if (index == 0) {
             Navigator.pushReplacementNamed(context, AppRouter.home);
-          if (index == 1)
+          }
+          if (index == 1) {
             Navigator.pushReplacementNamed(context, AppRouter.search);
-          if (index == 3)
+          }
+          if (index == 3) {
             Navigator.pushReplacementNamed(context, AppRouter.favourites);
-          if (index == 4)
+          }
+          if (index == 4) {
             Navigator.pushReplacementNamed(context, AppRouter.account);
+          }
         },
       ),
     );

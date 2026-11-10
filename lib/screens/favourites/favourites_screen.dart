@@ -119,14 +119,18 @@ class FavouritesScreen extends StatelessWidget {
         currentIndex: 3,
         onTap: (int index) {
           if (index == 3) return;
-          if (index == 0)
+          if (index == 0) {
             Navigator.pushReplacementNamed(context, AppRouter.home);
-          if (index == 1)
+          }
+          if (index == 1) {
             Navigator.pushReplacementNamed(context, AppRouter.search);
-          if (index == 2)
+          }
+          if (index == 2) {
             Navigator.pushReplacementNamed(context, AppRouter.nearby);
-          if (index == 4)
+          }
+          if (index == 4) {
             Navigator.pushReplacementNamed(context, AppRouter.account);
+          }
         },
       ),
     );

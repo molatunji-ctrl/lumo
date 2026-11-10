@@ -95,7 +95,7 @@ class _SplashScreenState extends State<SplashScreen>
         _completed = true;
         Navigator.of(context).pushReplacement(
           PageRouteBuilder<void>(
-            pageBuilder: (_, __, ___) => const HomeScreen(),
+            pageBuilder: (_, _, _) => const HomeScreen(),
             transitionDuration: Duration.zero,
             reverseTransitionDuration: Duration.zero,
           ),
@@ -1505,7 +1505,7 @@ class _PortalRoute extends PageRouteBuilder<void> {
     required Widget page,
     required bool reduced,
   }) : super(
-          pageBuilder: (_, __, ___) => page,
+          pageBuilder: (_, _, _) => page,
           transitionDuration: Duration(milliseconds: reduced ? 300 : 800),
           reverseTransitionDuration: Duration.zero,
           transitionsBuilder: (context, animation, secondary, child) {
