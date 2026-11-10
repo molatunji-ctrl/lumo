@@ -46,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
-    final bool isDesktop = width > 800;
+    final bool isDesktop = width > 1100;
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     final Color bgColor = isDarkMode
@@ -76,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const HeroSection(),
               const CategoryList(),
 
-              const SizedBox(height: 24),
+              SizedBox(height: isDesktop ? 72 : 52),
 
               // Section 1: DISCOVER -> Products to discover
               Padding(
@@ -87,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const Text(
                       'DISCOVER',
                       style: TextStyle(
-                        color: AppColors.orange,
+                        color: AppColors.darkTextSecondary,
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.2,
@@ -98,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Products to discover',
+                          'Popular near Ikeja',
                           style: TextStyle(
                             color: textColor,
                             fontSize: 20,
@@ -143,8 +143,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: isDesktop ? 3 : (width > 500 ? 2 : 1),
-                    childAspectRatio: isDesktop ? 0.9 : 0.82,
+                    crossAxisCount: isDesktop ? 3 : 2,
+                    childAspectRatio: isDesktop ? 0.9 : 0.62,
                     crossAxisSpacing: 16,
                     mainAxisSpacing: 16,
                   ),
@@ -270,10 +270,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: AppBottomNavigation(
-        currentIndex: _currentIndex,
-        onTap: _onBottomNavTapped,
-      ),
+      bottomNavigationBar: isDesktop
+          ? null
+          : AppBottomNavigation(
+              currentIndex: _currentIndex,
+              onTap: _onBottomNavTapped,
+            ),
     );
   }
 
@@ -305,16 +307,17 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: Stack(
                 children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(16),
-                    ),
-                    child: Image.network(
-                      product.imageUrl,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          Container(color: surfaceColor),
+                  Positioned.fill(
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(16),
+                      ),
+                      child: Image.network(
+                        product.imageUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            Container(color: surfaceColor),
+                      ),
                     ),
                   ),
                   if (product.isSellerListed)

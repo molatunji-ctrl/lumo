@@ -28,10 +28,7 @@ class LoadingIndicator extends StatelessWidget {
 class ConnectingLoader extends StatelessWidget {
   final String message;
 
-  const ConnectingLoader({
-    super.key,
-    this.message = 'Connecting To Lumo...',
-  });
+  const ConnectingLoader({super.key, this.message = 'Connecting To Lumo...'});
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +51,7 @@ class ConnectingLoader extends StatelessWidget {
                 child: Text(
                   message,
                   style: const TextStyle(
-                    color: AppColors.textLight,
+                    color: AppColors.darkTextPrimary,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),

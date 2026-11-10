@@ -22,14 +22,19 @@ class _HeroSectionState extends State<HeroSection> {
   }
 
   void _submitSearch([String? query]) {
-    final searchTerm = query ?? _searchController.text;
-    Navigator.pushNamed(context, AppRouter.products, arguments: searchTerm);
+    final searchTerm = (query ?? _searchController.text).trim();
+    if (searchTerm.isEmpty) return;
+    if (widget.onSearchSubmitted != null) {
+      widget.onSearchSubmitted!(searchTerm);
+      return;
+    }
+    Navigator.pushNamed(context, AppRouter.search, arguments: searchTerm);
   }
 
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
-    final bool isDesktop = width > 800;
+    final bool isDesktop = width > 1100;
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     final Color bgColor = isDarkMode
@@ -153,8 +158,8 @@ class _HeroSectionState extends State<HeroSection> {
           'Find it nearby.\nShop with\nconfidence.',
           style: TextStyle(
             color: textColor,
-            fontSize: isDesktop ? 54 : 38,
-            fontWeight: FontWeight.w800,
+            fontSize: isDesktop ? 64 : 38,
+            fontWeight: FontWeight.w600,
             height: 1.08,
             letterSpacing: -1.2,
           ),

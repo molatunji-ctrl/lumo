@@ -18,9 +18,9 @@ class AppColors {
   static const Color lightTextMuted = Color(0xFF94A3B8);
 
   // Dark Theme Colors
-  static const Color darkBackground = Color(0xFF0B132B);
-  static const Color darkSurface = Color(0xFF162032);
-  static const Color darkCardBorder = Color(0xFF263346);
+  static const Color darkBackground = Color(0xFF151B26);
+  static const Color darkSurface = Color(0xFF202A39);
+  static const Color darkCardBorder = Color(0xFF344154);
   static const Color darkTextPrimary = Colors.white;
   static const Color darkTextSecondary = Color(0xFF94A3B8);
   static const Color darkTextMuted = Color(0xFF64748B);

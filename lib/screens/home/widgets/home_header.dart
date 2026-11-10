@@ -19,7 +19,7 @@ class HomeHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
-    final bool isDesktop = width > 800;
+    final bool isDesktop = width > 1100;
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     final Color bgColor = isDarkMode
@@ -101,13 +101,14 @@ class HomeHeader extends StatelessWidget {
 
           // Right action buttons
           Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
               // Location Dropdown Pill
               GestureDetector(
                 onTap: onLocationTap,
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
+                    horizontal: 10,
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
@@ -124,12 +125,19 @@ class HomeHeader extends StatelessWidget {
                         size: 16,
                       ),
                       const SizedBox(width: 6),
-                      Text(
-                        locationName,
-                        style: TextStyle(
-                          color: textColor,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: isDesktop ? 120 : 68,
+                        ),
+                        child: Text(
+                          locationName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: textColor,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 4),
@@ -146,19 +154,18 @@ class HomeHeader extends StatelessWidget {
               const SizedBox(width: 8),
 
               // Theme Toggle Icon Button
-              _buildIconButton(
-                icon: isDarkMode
-                    ? Icons.light_mode_outlined
-                    : Icons.dark_mode_outlined,
-                surfaceColor: surfaceColor,
-                borderColor: borderColor,
-                iconColor: textColor,
-                onTap: () {
-                  ThemeController.instance.toggleTheme();
-                },
-              ),
-
-              const SizedBox(width: 8),
+              if (isDesktop) ...[
+                _buildIconButton(
+                  icon: isDarkMode
+                      ? Icons.light_mode_outlined
+                      : Icons.dark_mode_outlined,
+                  surfaceColor: surfaceColor,
+                  borderColor: borderColor,
+                  iconColor: textColor,
+                  onTap: ThemeController.instance.toggleTheme,
+                ),
+                const SizedBox(width: 8),
+              ],
 
               // Notification Icon
               _buildIconButton(
